@@ -1,0 +1,182 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+/**Estilos generales */
+:root {
+    --background-color: white;
+    --background-color-sidebar: #012446;
+    --text-title-color: #053D4E;
+    --text-color: #32363B;
+    --text-color-sidebar: #FFF;
+    --icon-color: #32363B;
+    --icon-menu-color: #707780;
+    --menu-color: #FFF;
+
+    --text-selected-color: #355CC0;
+    --background-selected: #EBF0FF;
+    --background-hover: #EBF0FF;
+
+    --border-color: #E6E9ED;
+}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Montserrat", sans-serif;
+}
+body {
+    width: 100%;
+    height: 100vh;
+    background-color: #212529;
+}
+
+/**Estilos del sidebar */
+.sidebar-app {
+    display: flex;
+    flex-direction: column;
+    margin-top: 0;
+    width: 4rem;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    padding: 1.1rem 0;
+    overflow-y: auto;
+    background-color: var(--background-color-sidebar);
+    transition: width 0.5s ease;
+}
+.sidebar-app.menu-toggle-app {
+    width: 14rem;
+}
+.sidebar-app ul {
+    display: flex;
+    flex-direction: column;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    height: 100%;
+}
+.sidebar-app li {
+    list-style: none;
+}
+.sidebar-app a {
+    display: flex;
+    align-items: center;
+    gap: 1.3rem;
+    padding: 0.9rem 0.7rem;
+    text-decoration: none;
+    margin: 0 0.5rem;
+    border-radius: 0.5rem;
+    white-space: nowrap;
+    overflow: hidden;
+    color: var(--text-color-sidebar);
+}
+.sidebar-app a:hover {
+    background-color: var(--background-hover);
+    color: #000 !important;
+}
+.sidebar-app a:hover img{
+    filter: brightness(0) saturate(100%) invert(0%) sepia(100%) saturate(0%) hue-rotate(360deg) brightness(0) contrast(100%);
+}
+.sidebar-app img {
+    width: 1.6rem;
+}
+.sidebar-app .logout {
+    margin-top: auto;
+}
+
+/**Estilso del menu hamburguesa */
+.menu-container-app {
+    display: block;
+    align-items: center;
+    gap: 1.3rem;
+    padding: 0.9rem 0.7rem;
+    margin: 0 0.5rem;
+    cursor: pointer;
+}
+.menu-app {
+    width: 1.5rem;
+    height: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.menu-app div {
+    width: 100% !important;
+    height: 0.15rem !important;
+    background-color: var(--menu-color) !important;
+}
+
+/**Estilos generales para el main */
+main {
+    margin-left: 4rem;
+    transition: margin-left 0.5s ease;
+}
+main.menu-toggle-app {
+    margin-left: 14rem;
+}
+
+/**Estilos para la seccion 1 del main, donde se muestran profile, full name, position y last connection */
+.profile-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.profile-img {
+    width: 15rem;
+    height: 15rem;
+}
+.profile-img-user {
+    width: 3.5rem;
+    height: 3.5rem;
+}
+.profile-img-user-details {
+    width: 6rem;
+    height: 6rem;
+}
+
+/**Estilos de la seccion 2 del main, donde se muestra la tabla con la informacion de los proyectos del admin */
+.table {
+    color: #0000;
+}
+.table-dark {
+    background-color: #000 !important;
+}
+
+/**Estilos para personalizar los formularios de las opciones para crear, actualizar y eliminar proyectos */
+.custom-input {
+    background-color: #D9D9D9 !important;
+}
+.custom-input:focus, .custom-input:hover {
+    outline: none !important;
+    box-shadow: none !important;
+    border: 0;
+}
+.hidden-form {
+    display: none !important;
+}
+.hidden-menu-user {
+    display: none !important;
+}
+.hidden-menu-admin {
+    display: none !important;
+}
+.hidden-form-update {
+    display: none !important;
+}
+.hidden-form-assigned {
+    display: none !important;
+}
+.hidden-delete {
+    display: none !important;
+}
+.hidden-new-user {
+    display: none !important;
+}
+.hidden-detail {
+    display: none !important;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
