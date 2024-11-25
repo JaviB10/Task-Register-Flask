@@ -1,0 +1,14 @@
+{% block list_users %}
+    <li>
+        <a href="#" id="add-user-admin" onclick="openForm()">
+            <img src="{{ url_for('static', filename='img/user-add-icon.svg') }}" alt="">
+            <span>New User</span>
+        </a>
+    </li>
+    <li>
+        <a href="/pages/dashboard-assigned-projects-admin.html">
+            <img src="{{ url_for('static', filename='img/user-assigned-icon.svg') }}" alt="">
+            <span>Assigned Projects</span>
+        </a>
+    </li>
+{% endblock list_users %}

@@ -1,0 +1,68 @@
+{% extends 'index.html' %}
+
+{% block content_home %}
+    {% block base_sidebar %}
+        {% include "base_sidebar.html" %}
+    {% endblock base_sidebar %}
+    <div class="container-fluid">
+        <div class="row align-items-center">
+            <div class="col-md-6 d-flex align-items-center">
+            <div class="profile-icon">
+                <img src="{{ url_for('static', filename='img/profile-img.png') }}" alt="" class="rounded-circle profile-img">
+            </div>
+            <div>
+                <div class="h5 mb-1">
+                    ADMIN01
+                </div>
+                <div>
+                    MANAGER
+                </div>
+            </div>
+            </div>
+            <div class="col-md-6 text-md-end">
+            <div class="h5 mb-1">Last Connection</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid pt-5">
+        <div class="row align-items-center">
+            <div class="col-md-6 d-flex align-items-center">
+                {% if page == 'home' %}
+                    <div class="h5 mb-1">
+                        Show all projects
+                    </div>
+                {% elif page == 'users' %}
+                    <div class="h5 mb-1">
+                        Show all users
+                    </div>
+                {% endif %}
+                
+            </div>
+            <div class="col-md-6 text-md-end">
+                <button type="button" class="btn btn-outline-info">Export</button>
+            </div>
+        </div>
+    </div>
+    {% if page == 'home' %}
+        {% block content_table %}
+            {% include "table-projects.html" %}
+        {% endblock content_table %}
+    {% elif page == 'users' %}
+        {% block content_table_user %}
+            {% include "table-users.html" %}
+        {% endblock content_table_user %}
+    {% endif %}
+    
+{% endblock content_home %}
+
+{% if page == 'home' %}
+    {% block script_home %}
+        <script src="{{ url_for('static', filename='js/script-dashboard-admin.js') }}"></script>
+    {% endblock script_home %}
+{% elif page == 'users' %}
+    {% block script_list_users %}
+        <script src="{{ url_for('static', filename='js/script-dashboard-list-users-admin.js') }}"></script>
+    {% endblock script_list_users %}
+{% endif %}
+

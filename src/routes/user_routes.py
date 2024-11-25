@@ -10,13 +10,13 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
-@user_bp.route('/list_users', methods=['GET'])
+@user_bp.route('/', methods=['GET'])
 def get_all_users():
     db = get_db_connection()
     user_service = UserService(db)
     users = user_service.get_all_users()
     db.close()
-    return render_template('dashboard-list-users-admin.html', users=users)
+    return render_template('table-users.html', users=users)
 
 @user_bp.route('/create_user', methods=['GET', 'POST'])
 def create_user():

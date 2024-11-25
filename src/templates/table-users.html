@@ -1,0 +1,45 @@
+{% block content_table_user %}
+    <div class="container-fluid py-5">
+        <div class="row align-items-center">
+            <div class="col-md-12 table-responsive">
+                <table class="table table-dark table-bordered table-striped mx-auto align-middle">
+                    <thead>
+                        <tr>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
+                            <th scope="col">Full name</th>
+                            <th scope="col">Position</th>
+                            <th scope="col">Email</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            {% for item in users %}
+                                {% if item.role != 'admin' %}
+                                    <tr>
+                                        <td>
+                                            <a href="#" class="text-primary fw-bold text-decoration-none" data-menu="1" onclick="toggleMenu(event, 1)">
+                                                <img src="{{ url_for('static', filename='img/menu-icon.svg') }}" alt="">
+                                            </a>
+                                            <div class="menu-admin position-absolute mt-2 py-2 border border-light bg-black text-light hidden-menu-admin d-flex" style="width: auto;" data-menu="1">
+                                                <a href="/pages/dashboard-view-user-profile-admin.html"><img src="{{ url_for('static', filename='img/search-icon.svg') }}" alt="" class="mx-2"></a>
+                                                <img src="{{ url_for('static', filename='img/update-icon.svg') }}" alt="" class="cursor-pointer" onclick="editUser(1)">
+                                                <img src="{{ url_for('static', filename='img/delete-icon.svg') }}" alt="" class="cursor-pointer mx-2" onclick="deleteUser(1)">
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <img src="{{ url_for('static', filename='img/profile-img.png') }}" alt="" class="profile-img-user border-0">
+                                        </td>
+                                        <td>{{ item.name ~ ' ' ~ item.last_name }}</td>
+                                        <td>{{ item.position }}</td>
+                                        <td>{{ item.email }}</td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock content_table_user %}

@@ -1,0 +1,49 @@
+{% block content_table %}
+    <div class="container-fluid py-5">
+        <div class="row align-items-center">
+            <div class="col-12 table-responsive">
+                <table class="table table-bordered table-striped table-dark mx-auto bg-black">
+                    <thead>
+                        <tr>
+                            <th scope="col-12"></th>
+                            <th scope="col">Project name</th>
+                            <th scope="col">Comments</th>
+                            <th scope="col">Start</th>
+                            <th scope="col">Finish</th>
+                            <th scope="col">Status</th>
+                            <th scope="col" class="text-center">Collaborators</th>
+                            <th scope="col">Worked hours</th>
+                            <th scope="col">To do list</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            {% for item in projects %}
+                                <td>
+                                    <a href="#" class="text-primary fw-bold text-decoration-none" data-menu="{{ item[0] }}" onclick="toggleMenu(event, '{{ item[0] }}')">
+                                        <img src="{{ url_for('static', filename='img/menu-icon.svg') }}" alt="">
+                                    </a>
+                                    
+                                    <div class="menu-admin position-absolute mt-2 py-2 border border-light bg-black text-light hidden-menu-admin d-flex" style="width: auto;" data-menu="{{ item[0] }}">
+                                        <img src="{{ url_for('static', filename='img/assigned-icon.svg') }}" alt="assign" class="cursor-pointer mx-2" onclick="assignedProject(1)">
+                                        <img src="{{ url_for('static', filename='img/update-icon.svg') }}" alt="update" class="cursor-pointer" onclick="editProject(1)">
+                                        <img src="{{ url_for('static', filename='img/delete-icon.svg') }}" alt="delete"  class="cursor-pointer mx-2" onclick="deleteProject('{{ item[0] }}')">
+                                    </div>
+                                    
+                                    </td>
+                                        <td>{{ item.project_name }}</td>
+                                        <td>{{ item.comments }}</td>
+                                        <td>{{ item.start }}</td>
+                                        <td>{{ item.finish }}</td>
+                                        <td>{{ item.status }}</td>
+                                        <td class="text-center">{{ item.collaborators }}</td>
+                                        <td>{{ item.worked_hours }} hours</td>
+                                        <td>{{ item.to_do_list }}</td>
+                                    </tr>
+                            {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock content_table %}

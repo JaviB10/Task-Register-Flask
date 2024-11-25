@@ -1,0 +1,37 @@
+{% block base_sidebar %}
+    <nav class="sidebar-app text-light" id="sidebar">
+        <ul class="list-unstyled flex-grow-1">
+            <li class="menu-container-app">
+                <div class="menu-app" id="menu">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </li>
+            <li>
+                <a href="/">
+                    <img src="{{ url_for('static', filename='img/home-icon.svg') }}" alt="">
+                    <span>Home</span>
+                </a>
+            </li>
+                {% if page == 'home' %}
+                    {% block home_admin %}
+                        {% include "sidebar-home-admin.html" %}
+                    {% endblock home_admin %}
+                {% elif page == 'users' %}
+                    {% block list_users %}
+                        {% include "sidebar-list-users.html" %}
+                    {% endblock list_users %}
+                {% endif %}
+            <li class="mt-auto">
+                <a href="#">
+                    <img src="{{ url_for('static', filename='img/logout-icon.svg') }}" alt="">
+                    <span>Logout</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+{% endblock base_sidebar %}
+{% block script_sidebar %}
+    <script src="{{ url_for('static', filename='js/script-sidebar.js') }}"></script>
+{% endblock script_sidebar %}

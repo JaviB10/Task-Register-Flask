@@ -59,10 +59,14 @@ const closeFormAssigned = () => {
 }
 
 //Muestra el modal para confirmar la eliminacion de un proyecto y cierra el menu del admin
-const deleteProject = (menuID) => {
+const deleteProject = (projectId) => {
+    console.log(projectId);
+    
+    document.getElementById('projectId').value = projectId;
+
     buttonDeleteProjectAdmin.classList.remove('hidden-delete');
 
-    const deleteModal = document.querySelector(`.menu-admin[data-menu="${menuID}"]`);
+    const deleteModal = document.querySelector(`.menu-admin[data-menu="${projectId}"]`);
     if (deleteModal) {
         deleteModal.classList.add('hidden-menu-admin')
     }
