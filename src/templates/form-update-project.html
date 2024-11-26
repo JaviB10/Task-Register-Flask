@@ -1,0 +1,36 @@
+{% block content_form_update_project %}
+    <div class="position-fixed top-0 start-0 end-0 bottom-0 bg-light bg-opacity-50 d-flex justify-content-center align-items-center z-index-1050 hidden-form-update" id="hidden-form-update-admin">
+        <div class="bg-black p-4 rounded shadow-lg w-100" style="max-width: 32rem; position: relative;">
+            <form action="{{ url_for('projects.update_project') }}" method="POST">
+                <input type="hidden" id="project_id" name="project_id">
+                <h4 class="text-center text-light fw-bold mb-4">UPDATE PROJECT</h4>
+                <div>
+                    <label for="project_name"></label>
+                    <input type="text" class="form-control custom-input" id="project_name" name="project_name" placeholder="Project name">
+                </div>
+                <div>
+                    <label for="comments"></label>
+                    <textarea type="text" class="form-control custom-input" id="comments_project" name="comments" rows="3"></textarea>
+                </div>
+                <div>
+                    <label for="to_do_list"></label>
+                    <textarea  class="form-control custom-input" id="to_do_list" name="to_do_list" rows="3"></textarea>
+                </div>
+                <div>
+                    <label for="worked_hours"></label>
+                    <input type="number" class="form-control custom-input" id="worked_hours" name="worked_hours">
+                </div>
+                <div class="my-4">
+                    <select id="status_project" name="status_project" class="form-select custom-input">
+                        <option value="1" {% if status == 1 %}selected{% endif %}>In Progress</option>
+                        <option value="0" {% if status == 0 %}selected{% endif %}>Finished</option>
+                    </select>
+                </div>
+                <div class="d-flex justify-content-end">
+                    <button type="button" id="close-form" class="btn btn-danger me-2" onclick="closeFormUpdate()">Close</button>
+                    <button type="submit" class="btn btn-success">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock content_form_update_project %}

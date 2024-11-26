@@ -32,3 +32,13 @@ def create_user():
     user_service.create_user(name, last_name, position, email, role="user")
 
     return redirect(url_for('users.get_all_users'))
+
+@user_bp.route('/delete_user', methods=['GET', 'POST'])    
+def delete_user():
+    db = get_db_connection()
+    user_service = UserService(db)
+    user_id = request.form.get('userId')
+    print(user_id)
+    user_service.delete_user(user_id)
+
+    return redirect(url_for('users.get_all_users'))

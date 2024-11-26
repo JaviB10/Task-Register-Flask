@@ -18,17 +18,21 @@
                                 {% if item.role != 'admin' %}
                                     <tr>
                                         <td>
-                                            <a href="#" class="text-primary fw-bold text-decoration-none" data-menu="1" onclick="toggleMenu(event, 1)">
-                                                <img src="{{ url_for('static', filename='img/menu-icon.svg') }}" alt="">
+                                            <a href="#" class="text-primary fw-bold text-decoration-none" data-menu="{{ item[0] }}" onclick="toggleMenu(event, '{{ item[0] }}')">
+                                                <div class="d-flex justify-content-center align-items-center">
+                                                    <img src="{{ url_for('static', filename='img/menu-icon.svg') }}" alt="">
+                                                </div>
                                             </a>
-                                            <div class="menu-admin position-absolute mt-2 py-2 border border-light bg-black text-light hidden-menu-admin d-flex" style="width: auto;" data-menu="1">
+                                            <div class="menu-admin position-absolute mt-2 py-2 border border-light bg-black text-light hidden-menu-admin d-flex" style="width: auto;" data-menu="{{ item[0] }}">
                                                 <a href="/pages/dashboard-view-user-profile-admin.html"><img src="{{ url_for('static', filename='img/search-icon.svg') }}" alt="" class="mx-2"></a>
-                                                <img src="{{ url_for('static', filename='img/update-icon.svg') }}" alt="" class="cursor-pointer" onclick="editUser(1)">
-                                                <img src="{{ url_for('static', filename='img/delete-icon.svg') }}" alt="" class="cursor-pointer mx-2" onclick="deleteUser(1)">
+                                                <img src="{{ url_for('static', filename='img/update-icon.svg') }}" alt="" class="cursor-pointer" onclick="editUser('{{ item[0] }}')">
+                                                <img src="{{ url_for('static', filename='img/delete-icon.svg') }}" alt="" class="cursor-pointer mx-2" onclick="deleteUser('{{ item[0] }}')">
                                             </div>
                                         </td>
                                         <td>
-                                            <img src="{{ url_for('static', filename='img/profile-img.png') }}" alt="" class="profile-img-user border-0">
+                                            <div class="d-flex justify-content-center align-items-center">
+                                                <img src="{{ url_for('static', filename='img/profile-img.png') }}" alt="" class="profile-img-user border-0">
+                                            </div>
                                         </td>
                                         <td>{{ item.name ~ ' ' ~ item.last_name }}</td>
                                         <td>{{ item.position }}</td>

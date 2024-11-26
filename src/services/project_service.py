@@ -20,7 +20,7 @@ class ProjectService:
         
         start = datetime.now().strftime('%Y-%m-%d')
         finish = None 
-        status = 'In progress'
+        status = True
         user_id = 1
 
         cursor.execute('''
@@ -42,11 +42,13 @@ class ProjectService:
         cursor = self.db.cursor()
         
         cursor.execute('''
-            DELETE FROM project_collaborators WHERE project_id = ?
+            DELETE FROM project_collaborators 
+            WHERE project_id = ?
         ''', (project_id,))
         
         cursor.execute('''
-            DELETE FROM projects WHERE id = ?
+            DELETE FROM projects 
+            WHERE id = ?
         ''', (project_id,))
         
         self.db.commit()
@@ -54,3 +56,29 @@ class ProjectService:
         if cursor.rowcount == 0:
             return False
         return True
+    
+    def update_project(self, project_id, project_name, comments, to_do_list, worker_hours, status):
+        try:
+            cursor = self.db.cursor()
+
+            if status == 0:  # Finished
+                finish = datetime.now().strftime('%Y-%m-%d')
+            else:  # In Progress
+                finish = None
+                
+            cursor.execute('''
+                UPDATE projects 
+                SET project_name = ?, comments = ?, to_do_list = ?, worked_hours = ?, status = ?, finish = ?
+                WHERE id = ?
+            ''', (project_name, comments, to_do_list, worker_hours, status, finish, project_id))
+            
+            self.db.commit()
+
+            if cursor.rowcount > 0:
+                return True
+            else:
+                return False
+            
+        except Exception as e:
+            print(f"Error al actualizar el proyecto: {e}")
+            return False

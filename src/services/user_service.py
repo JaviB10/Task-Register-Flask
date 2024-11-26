@@ -22,3 +22,28 @@ class UserService:
         ''', (name, last_name, position, email, role))
         self.db.commit()
         return cursor.lastrowid
+    
+    def delete_user(self, user_id):
+        cursor = self.db.cursor()
+        print(user_id)
+        # Comprobar si el usuario existe
+        cursor.execute('''
+            SELECT * FROM users WHERE id = ?
+        ''', (user_id,))
+        user = cursor.fetchone()
+        if not user:
+            print(f"El usuario con id {user_id} no existe.")
+            return False
+        
+        # Intentar eliminar el usuario
+        cursor.execute('''
+            DELETE FROM users WHERE id = ?
+        ''', (user_id,))
+        self.db.commit()
+        
+        if cursor.rowcount == 0:
+            print(f"No se pudo eliminar el usuario con id {user_id}.")
+            return False
+        
+        print(f"Usuario con id {user_id} eliminado correctamente.")
+        return True

@@ -44,10 +44,14 @@ const closeFormUpdate = () => {
 }
 
 //Muestra el modal para confirmar la eliminacion de un proyecto y cierra el menu del admin
-const deleteUser = (menuID) => {
+const deleteUser = (userId) => {
+    console.log(userId);
+    
+    document.getElementById('userId').value = userId;
+
     buttonDeleteUserAdmin.classList.remove('hidden-delete');
 
-    const deleteModal = document.querySelector(`.menu-admin[data-menu="${menuID}"]`);
+    const deleteModal = document.querySelector(`.menu-admin[data-menu="${userId}"]`);
     if (deleteModal) {
         deleteModal.classList.add('hidden-menu-admin')
     }

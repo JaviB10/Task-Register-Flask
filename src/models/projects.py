@@ -20,7 +20,7 @@ class Project:
                    comments TEXT,
                    start DATE NOT NULL DEFAULT CURRENT_DATE,
                    finish DATE DEFAULT NULL,
-                   status TEXT CHECK(status IN ('In progress', 'Finished')) DEFAULT 'In progress',
+                   status BOOLEAN DEFAULT 1,  -- 1 means In Progress, 0 means Finished,
                    worked_hours INTEGER DEFAULT 0,
                    to_do_list TEXT,
                    user_id INTEGER,

@@ -54,15 +54,33 @@
         {% endblock content_table_user %}
     {% endif %}
     
+    {% block content_form_add_project %}
+        {% include "form-new-project.html" %}
+    {% endblock content_form_add_project %}
+
+    {% block content_form_new_user %}
+        {% include "form-new-user.html" %}
+    {% endblock content_form_new_user %}
+    
+    {% block content_form_update_project %}
+        {% include "form-update-project.html" %}
+    {% endblock content_form_update_project %}
+
+    {% block content_form_delete_project %}
+        {% include "form-delete-project.html" %}
+    {% endblock content_form_delete_project %}
+
+    {% block content_form_delete_user %}
+        {% include "form-delete-user.html" %}
+    {% endblock content_form_delete_user %}
+
 {% endblock content_home %}
 
-{% if page == 'home' %}
-    {% block script_home %}
+{% block block_scripts %}
+    {% if page == 'home' %}
         <script src="{{ url_for('static', filename='js/script-dashboard-admin.js') }}"></script>
-    {% endblock script_home %}
-{% elif page == 'users' %}
-    {% block script_list_users %}
-        <script src="{{ url_for('static', filename='js/script-dashboard-list-users-admin.js') }}"></script>
-    {% endblock script_list_users %}
-{% endif %}
+    {% elif page == 'users' %}
+        <script src="{{ url_for('static', filename='js/script-dashboard-list-users.js') }}"></script>
+    {% endif %}
+{% endblock block_scripts %}
 

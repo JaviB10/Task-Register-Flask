@@ -24,19 +24,22 @@ def create_project():
     project_service = ProjectService(db)
 
     try:
-        project_name = request.form.get('project_name')
-        comments = request.form.get('comments')
-        worked_hours = request.form.get('worked_hours', 0)
-        to_do_list = request.form.get('to_do_list')
+        if request.method == 'POST':
+            project_name = request.form.get('project_name')
+            comments = request.form.get('comments')
+            worked_hours = request.form.get('worked_hours', 0)
+            to_do_list = request.form.get('to_do_list')
 
-        collaborators_raw = request.form.get('collaborators', '')
-        collaborators = [int(c.strip()) for c in collaborators_raw.split(',') if c.strip().isdigit()]
+            collaborators_raw = request.form.get('collaborators', '')
+            collaborators = [int(c.strip()) for c in collaborators_raw.split(',') if c.strip().isdigit()]
 
-        # Crear el proyecto
-        project_id = project_service.create_project(project_name, comments, worked_hours, to_do_list, collaborators = collaborators)
+            # Crear el proyecto
+            success = project_service.create_project(project_name, comments, worked_hours, to_do_list, collaborators = collaborators)
 
-        return jsonify({'message': 'Proyecto creado con éxito', 'project_id': project_id}), 201
-
+            if success:
+                return redirect(request.referrer)  # Redirigir después de la actualización
+            else:
+                return "Error al crear el proyecto", 500
     except Exception as e:
         return jsonify({'error': 'Ocurrió un error al crear el proyecto', 'details': str(e)}), 500
 
@@ -44,8 +47,38 @@ def create_project():
 def delete_project():
     db = get_db_connection()
     project_service = ProjectService(db)
-    project_id = request.form.get('projectId')
-    print(project_id)
-    project_service.delete_project(project_id)
 
-    return redirect(url_for('projects.get_all_projects'))
+    if request.method == 'POST':
+        project_id = request.form.get('projectId')
+
+        # Actualizar el proyecto en la base de datos
+        success = project_service.delete_project(project_id)
+
+        if success:
+            return redirect(request.referrer)  # Redirigir después de la actualización
+        else:
+            return "Error al eliminar el proyecto", 500
+
+@project_bp.route('/update_project', methods=['GET', 'POST'])
+def update_project():
+    db = get_db_connection()
+    project_service = ProjectService(db)
+
+    if request.method == 'POST':
+        project_id = request.form.get('project_id')
+        project_name = request.form['project_name']
+        comments = request.form['comments']
+        to_do_list = request.form['to_do_list']
+        worked_hours = request.form['worked_hours']
+        status = int(request.form['status_project'])
+
+        project = project_service.get_project_by_id(project_id)
+        if not project:
+            return "Proyecto no encontrado", 404
+
+        success = project_service.update_project(project_id, project_name, comments, to_do_list, worked_hours, status)
+
+        if success:
+            return redirect(request.referrer)  # Redirigir después de la actualización
+        else:
+            return "Error al actualizar el proyecto", 500

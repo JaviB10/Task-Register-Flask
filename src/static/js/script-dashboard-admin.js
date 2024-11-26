@@ -32,13 +32,31 @@ const toggleMenu = (event, menuID) => {
 }
 
 //Muestra el formulario para actualizar un proyecto y cierra el menu del admin
-const editProject = (menuID) => {  
+const editProject = (menuID, project_name, comments, worked_hours, to_do_list, status) => {  
+    
     buttonUpdateProjectAdmin.classList.remove('hidden-form-update');
 
     const menuAdmin = document.querySelector(`.menu-admin[data-menu="${menuID}"]`);
     if (menuAdmin) {
         menuAdmin.classList.add('hidden-menu-admin');
     }
+    
+    
+    const projectData = {
+        id: menuID,
+        project_name: project_name,
+        comments: comments,
+        worked_hours: worked_hours,
+        to_do_list: to_do_list,
+        status: status
+    };
+
+    document.querySelector('#project_id').value = projectData.id;
+    document.querySelector('#project_name').value = projectData.project_name;
+    document.querySelector('#comments_project').value = projectData.comments;
+    document.querySelector('#worked_hours').value = projectData.worked_hours;
+    document.querySelector('#to_do_list').value = projectData.to_do_list;
+    document.querySelector('#status_project').value = projectData.status;
 } 
 
 const closeFormUpdate = () => {
