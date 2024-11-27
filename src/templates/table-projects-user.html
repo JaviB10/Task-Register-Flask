@@ -1,0 +1,61 @@
+{% block content_table_projects_user %}
+    <div class="container-fluid py-5">
+        <div class="row align-items-center">
+            <div class="col-12 table-responsive">
+                <table class="table table-bordered table-striped table-dark mx-auto bg-black">
+                    <thead>
+                        <tr>
+                            <th scope="col-12"></th>
+                            <th scope="col">Project name</th>
+                            <th scope="col">Comments</th>
+                            <th scope="col">Start</th>
+                            <th scope="col">Finish</th>
+                            <th scope="col">Status</th>
+                            <th scope="col" class="text-center">Collaborators</th>
+                            <th scope="col">Worked hours</th>
+                            <th scope="col">To do list</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            {% for project in projects %}
+                                
+                                    <td>
+                                        <a href="#" class="text-primary fw-bold text-decoration-none" data-menu="{{ project.id }}" onclick="toggleMenu(event, '{{ project.id }}')">
+                                            <div class="d-flex justify-content-center align-items-center">
+                                                <img src="{{ url_for('static', filename='img/menu-icon.svg') }}" alt="">
+                                            </div>
+                                        </a>
+                                        
+                                        <div class="menu-admin position-absolute mt-2 py-2 border border-light bg-black text-light hidden-menu-admin d-flex" style="width: auto;" data-menu="{{ project.id }}">
+                                            <img src="{{ url_for('static', filename='img/assigned-icon.svg') }}" alt="assign" class="cursor-pointer mx-2" onclick="assignedProject('{{ project[0] }}')">
+                                            <img src="{{ url_for('static', filename='img/update-icon.svg') }}" alt="update" class="cursor-pointer" onclick="editProject('{{ project.id }}', '{{ project.project_name}}', '{{ project.comments}}', '{{ project.worked_hours}}', '{{ project.to_do_list}}', '{{ project.status}}')">
+                                            <img src="{{ url_for('static', filename='img/delete-icon.svg') }}" alt="delete"  class="cursor-pointer mx-2" onclick="deleteProject('{{ project[0] }}')">
+                                        </div>
+                                    
+                                    </td>
+                                    <td>{{ project.project_name }}</td>
+                                    <td>{{ project.comments }}</td>
+                                    <td>{{ project.start }}</td>
+                                    <td>{{ project.finish }}</td>
+                                    <td>
+                                        {% if project.status == 1 %}
+                                            In progress
+                                        {% elif project.status == 0 %}
+                                            Finished
+                                        {% else %}
+                                            Unknown
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">{{ project.collaborators }}</td>
+                                    <td>{{ project.worked_hours }} hours</td>
+                                    <td>{{ project.to_do_list }}</td>
+                                 
+                            {% endfor %}
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock content_table_projects_user %}

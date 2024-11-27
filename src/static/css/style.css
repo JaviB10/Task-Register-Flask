@@ -151,6 +151,8 @@ main.menu-toggle-app {
     outline: none !important;
     box-shadow: none !important;
     border: 0;
+    transition: none !important; /* Elimina las transiciones */
+    transform: none !important; 
 }
 .hidden-form {
     display: none !important;

@@ -5,22 +5,27 @@
                 <input type="hidden" id="project_id" name="project_id">
                 <h4 class="text-center text-light fw-bold mb-4">UPDATE PROJECT</h4>
                 <div>
-                    <label for="project_name"></label>
-                    <input type="text" class="form-control custom-input" id="project_name" name="project_name" placeholder="Project name">
+                    <label for="project_name" class="mb-1 text-light fw-semibold">Project name</label>
+                    <input type="text" class="form-control custom-input" id="project_name" name="project_name" required>
                 </div>
-                <div>
-                    <label for="comments"></label>
-                    <textarea type="text" class="form-control custom-input" id="comments_project" name="comments" rows="3"></textarea>
+                <div class="mt-2">
+                    <label for="comments" class="mb-1 text-light fw-semibold">Comments</label>
+                    <textarea type="text" class="form-control custom-input" id="comments_project" name="comments" rows="3" required></textarea>
                 </div>
-                <div>
-                    <label for="to_do_list"></label>
+                <div class="mt-2">
+                    <label for="to_do_list" class="mb-1 text-light fw-semibold">To do list</label>
                     <textarea  class="form-control custom-input" id="to_do_list" name="to_do_list" rows="3"></textarea>
                 </div>
-                <div>
-                    <label for="worked_hours"></label>
-                    <input type="number" class="form-control custom-input" id="worked_hours" name="worked_hours">
+                <div class="mt-2">
+                    <label for="worked_hours" class="mb-1 text-light fw-semibold">Worked hours</label>
+                    <input type="number" min="0" class="form-control custom-input" id="worked_hours" name="worked_hours">
                 </div>
-                <div class="my-4">
+                <div class="mt-2">
+                    <label for="worked_minutes" class="mb-1 text-light fw-semibold">Worked minutes</label>
+                    <input type="number" min="0" max="60" class="form-control custom-input" id="worked_minutes" name="worked_minutes">
+                </div>
+                <div class="mt-2 mb-4">
+                    <label for="status_project" class="mb-1 text-light fw-semibold">Project finished?</label>
                     <select id="status_project" name="status_project" class="form-select custom-input">
                         <option value="1" {% if status == 1 %}selected{% endif %}>In Progress</option>
                         <option value="0" {% if status == 0 %}selected{% endif %}>Finished</option>

@@ -30,13 +30,28 @@ const toggleMenu = (event, menuID) => {
 }
 
 //Muestra el formulario para actualizar un usuario y cierra el menu del admin
-const editUser = (menuID) => {  
+const editUser = (userID, name, last_name, position, email) => {  
+
     buttonUpdateUserAdmin.classList.remove('hidden-form-update');
 
-    const menuAdmin = document.querySelector(`.menu-admin[data-menu="${menuID}"]`);
+    const menuAdmin = document.querySelector(`.menu-admin[data-menu="${userID}"]`);
     if (menuAdmin) {
         menuAdmin.classList.add('hidden-menu-admin');
     }
+
+    const userData = {
+        id: userID,
+        name: name,
+        last_name: last_name,
+        position: position,
+        email: email
+    }
+
+    document.querySelector('#first_name').value = userData.name
+    document.querySelector('#last_name').value = userData.last_name
+    document.querySelector('#position_user').value = userData.position
+    document.querySelector('#email_user').value = userData.email
+    document.querySelector('#user_id').value = userData.id
 } 
 
 const closeFormUpdate = () => {

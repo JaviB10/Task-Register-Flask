@@ -41,7 +41,6 @@ const editProject = (menuID, project_name, comments, worked_hours, to_do_list, s
         menuAdmin.classList.add('hidden-menu-admin');
     }
     
-    
     const projectData = {
         id: menuID,
         project_name: project_name,
@@ -65,11 +64,19 @@ const closeFormUpdate = () => {
 
 const assignedProject = (menuID) => {
     buttonAssignedProjectAdmin.classList.remove('hidden-form-assigned');
-
+    
+    
     const menuAdmin = document.querySelector(`.menu-admin[data-menu="${menuID}"]`);
     if (menuAdmin) {
+        console.log("este es el id que llega", menuID);
         menuAdmin.classList.add('hidden-menu-admin');
     }
+
+    const projectData = {
+        id: menuID,
+    };
+    console.log("este es el nuevo id", projectData.id);
+    document.querySelector('#projectID').value = projectData.id
 }
 
 const closeFormAssigned = () => {

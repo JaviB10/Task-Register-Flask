@@ -82,3 +82,23 @@ def update_project():
             return redirect(request.referrer)  # Redirigir después de la actualización
         else:
             return "Error al actualizar el proyecto", 500
+        
+@project_bp.route('/update_assigned_project', methods=['GET', 'POST'])
+def update_assigned_project():
+    db = get_db_connection()
+    project_service = ProjectService(db)
+
+    if request.method == 'POST':
+        project_id = request.form.get('projectID')
+        user_id = request.form['user_id']
+    
+        project = project_service.get_project_by_id(project_id)
+        if not project:
+            return "Proyecto no encontrado", 404
+
+        success = project_service.update_assigned_project(project_id, user_id)
+
+        if success:
+            return redirect(request.referrer)  # Redirigir después de la actualización
+        else:
+            return "Error al actualizar el proyecto", 500

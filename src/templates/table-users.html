@@ -14,19 +14,19 @@
                     </thead>
                     <tbody>
                         <tr>
-                            {% for item in users %}
-                                {% if item.role != 'admin' %}
+                            {% for user in users %}
+                                {% if user.role != 'admin' %}
                                     <tr>
                                         <td>
-                                            <a href="#" class="text-primary fw-bold text-decoration-none" data-menu="{{ item[0] }}" onclick="toggleMenu(event, '{{ item[0] }}')">
+                                            <a href="#" class="text-primary fw-bold text-decoration-none" data-menu="{{ user.id }}" onclick="toggleMenu(event, '{{ user.id }}')">
                                                 <div class="d-flex justify-content-center align-items-center">
                                                     <img src="{{ url_for('static', filename='img/menu-icon.svg') }}" alt="">
                                                 </div>
                                             </a>
-                                            <div class="menu-admin position-absolute mt-2 py-2 border border-light bg-black text-light hidden-menu-admin d-flex" style="width: auto;" data-menu="{{ item[0] }}">
-                                                <a href="/pages/dashboard-view-user-profile-admin.html"><img src="{{ url_for('static', filename='img/search-icon.svg') }}" alt="" class="mx-2"></a>
-                                                <img src="{{ url_for('static', filename='img/update-icon.svg') }}" alt="" class="cursor-pointer" onclick="editUser('{{ item[0] }}')">
-                                                <img src="{{ url_for('static', filename='img/delete-icon.svg') }}" alt="" class="cursor-pointer mx-2" onclick="deleteUser('{{ item[0] }}')">
+                                            <div class="menu-admin position-absolute mt-2 py-2 border border-light bg-black text-light hidden-menu-admin d-flex" style="width: auto;" data-menu="{{ user.id }}">
+                                                <a href="/projects_user/{{ user.id }}"><img src="{{ url_for('static', filename='img/search-icon.svg') }}" alt="" title="User projects" class="mx-2"></a>
+                                                <img src="{{ url_for('static', filename='img/update-icon.svg') }}" alt="" title="Update user" class="cursor-pointer" onclick="editUser('{{ user.id }}', '{{ user.name }}', '{{ user.last_name }}', '{{ user.position }}', '{{ user.email }}')">
+                                                <img src="{{ url_for('static', filename='img/delete-icon.svg') }}" alt="" title="Delete user" class="cursor-pointer mx-2" onclick="deleteUser('{{ user[0] }}')">
                                             </div>
                                         </td>
                                         <td>
@@ -34,9 +34,9 @@
                                                 <img src="{{ url_for('static', filename='img/profile-img.png') }}" alt="" class="profile-img-user border-0">
                                             </div>
                                         </td>
-                                        <td>{{ item.name ~ ' ' ~ item.last_name }}</td>
-                                        <td>{{ item.position }}</td>
-                                        <td>{{ item.email }}</td>
+                                        <td>{{ user.name ~ ' ' ~ user.last_name }}</td>
+                                        <td>{{ user.position }}</td>
+                                        <td>{{ user.email }}</td>
                                     </tr>
                                 {% endif %}
                             {% endfor %}

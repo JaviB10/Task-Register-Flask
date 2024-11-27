@@ -15,10 +15,15 @@ class ProjectService:
         cursor.execute('SELECT * FROM projects WHERE id = ?', (project_id))
         return cursor.fetchone()
     
+    def get_projects_by_user(self, user_id):
+        cursor = self.db.cursor()
+        cursor.execute('SELECT * FROM projects WHERE user_id = ?', (user_id,))
+        return cursor.fetchall()
+    
     def create_project(self, project_name, comments, worked_hours, to_do_list, collaborators = []):
         cursor = self.db.cursor()
         
-        start = datetime.now().strftime('%Y-%m-%d')
+        start = datetime.now().strftime('%d-%m-%Y')
         finish = None 
         status = True
         user_id = 1
@@ -62,10 +67,13 @@ class ProjectService:
             cursor = self.db.cursor()
 
             if status == 0:  # Finished
-                finish = datetime.now().strftime('%Y-%m-%d')
+                finish = datetime.now().strftime('%d-%m-%Y')
             else:  # In Progress
                 finish = None
-                
+
+            if worker_hours == "":
+                worker_hours = 0
+            
             cursor.execute('''
                 UPDATE projects 
                 SET project_name = ?, comments = ?, to_do_list = ?, worked_hours = ?, status = ?, finish = ?
@@ -81,4 +89,27 @@ class ProjectService:
             
         except Exception as e:
             print(f"Error al actualizar el proyecto: {e}")
+            return False
+        
+    def update_assigned_project(self, project_id, user_id):
+        try:
+            cursor = self.db.cursor()
+
+            if int(user_id) != 0:
+
+                cursor.execute('''
+                    UPDATE projects 
+                    SET user_id = ?
+                    WHERE id = ?
+                ''', (user_id, project_id))
+
+                self.db.commit()
+
+            if cursor.rowcount > 0:
+                return True
+            else:
+                return False
+
+        except Exception as e:
+            print(f"Error al asignar el proyecto a un usuario: {e}")
             return False
