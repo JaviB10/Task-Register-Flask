@@ -2,22 +2,22 @@
     <div class="position-fixed top-0 start-0 end-0 bottom-0 bg-light bg-opacity-50 d-flex justify-content-center align-items-center z-index-1050 hidden-new-user" id="hidden-new-user">
         <div class="bg-black p-4 rounded shadow-lg w-100" style="max-width: 32rem; position: relative;">
             <form action="{{ url_for('users.create_user') }}" method="POST">
-                <h4 class="text-center text-light fw-bold mb-4">NEW USER</h4>
+                <h4 class="text-center text-light fw-semibold mb-4">NEW USER</h4>
                 <div>
-                    <label for="name"></label>
-                    <input type="text" class="form-control custom-input" id="name" name="name" placeholder="First name">
+                    <label for="name" class="my-1 text-light fst-normal">First name</label>
+                    <input type="text" class="form-control custom-input" id="name" name="name" required>
                 </div>
                 <div>
-                    <label for="lastName"></label>
-                    <input type="text" class="form-control custom-input" id="lastName" name="last_name" placeholder="Last name">
+                    <label for="lastName" class="my-1 text-light fst-normal">Last name</label>
+                    <input type="text" class="form-control custom-input" id="lastName" name="last_name" required>
                 </div>
                 <div>
-                    <label for="position"></label>
-                    <input type="text" class="form-control custom-input" id="position" name="position" placeholder="Position">
+                    <label for="position"v>Position</label>
+                    <input type="text" class="form-control custom-input" id="position" name="position" required>
                 </div>
                 <div class="mb-3">
-                    <label for="email"></label>
-                    <input type="email" class="form-control custom-input" id="email" name="email" placeholder="Email">
+                    <label for="email" class="my-1 text-light fst-normal">Email</label>
+                    <input type="email" class="form-control custom-input" id="email" name="email" required>
                 </div>
                 <div class="d-flex justify-content-end">
                     <button type="button" id="close-form" class="btn btn-danger me-2" onclick="closeForm()">Close</button>

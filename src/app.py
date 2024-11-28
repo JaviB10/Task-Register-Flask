@@ -20,10 +20,13 @@ def get_db_connection():
 @app.route('/')
 def home():
     db = get_db_connection()
+
     project_service = ProjectService(db)
     projects = project_service.get_all_projects()
+
     user_service = UserService(db)
     users = user_service.get_all_users()
+    
     db.close()
 
     return render_template('home.html', page='home', projects=projects, users=users)
@@ -31,18 +34,27 @@ def home():
 @app.route('/users')
 def list_users():
     db = get_db_connection()
+
     user_service = UserService(db)
     users = user_service.get_all_users()
+
     db.close()
+
     return render_template('home.html', page='users', users=users)
 
 @app.route('/projects_user/<int:user_id>')
 def list_projects_user(user_id):
     db = get_db_connection()
+    
     project_service = ProjectService(db)
     projects = project_service.get_projects_by_user(user_id)
+
+    user_service = UserService(db)
+    user = user_service.get_user_by_id(user_id)
+
     db.close()
-    return render_template('home.html', page='projects_user', projects=projects)
+
+    return render_template('home.html', page='projects_user', projects=projects, user=user)
 
 if __name__ == "__main__":
     initialize_database()

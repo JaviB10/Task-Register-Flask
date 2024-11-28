@@ -3,9 +3,9 @@
         <div class="bg-black p-4 rounded shadow-lg w-100" style="max-width: 32rem; position: relative;">
             <form action="{{ url_for('projects.update_assigned_project') }}" method="POST">
                 <input type="hidden" id="projectID" name="projectID">
-                <h4 class="text-center text-light fw-bold mb-4">ASSIGNED PROJECT</h4>
+                <h4 class="text-center text-light fw-semibold mb-4">ASSIGNED PROJECT</h4>
                 <div class="mb-3">
-                    <label for="completed" class="mb-1 text-light fw-semibold">Assigned project?</label>
+                    <label for="completed" class="mb-1 text-light fw-normal">Assigned project?</label>
                     <select id="user_id" name="user_id" class="form-select custom-input">
                         <option value="0"></option>
                         {% for user in users %}

@@ -11,7 +11,7 @@ class UserService:
     
     def get_user_by_id(self, user_id):
         cursor = self.db.cursor()
-        cursor.execute('SELECT * FROM users WHERE id = ?', (user_id))
+        cursor.execute('SELECT * FROM users WHERE id = ?', (user_id,))
         return cursor.fetchone()
     
     def get_user_by_email(self, email):

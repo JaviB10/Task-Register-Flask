@@ -3,21 +3,21 @@
         <div class="bg-black p-4 rounded shadow-lg w-100" style="max-width: 32rem; position: relative;">
             <form action="{{ url_for('users.update_user') }}" method="POST">
                 <input type="hidden" id="user_id" name="user_id">
-                <h4 class="text-center text-light fw-bold mb-4">UPDATE USER</h4>
+                <h4 class="text-center text-light fw-semibold mb-4">UPDATE USER</h4>
                 <div>
-                    <label for="first_name"></label>
+                    <label for="first_name" class="my-1 text-light fst-normal">First name</label>
                     <input type="text" class="form-control custom-input" id="first_name" name="first_name" placeholder="First name" required>
                 </div>
                 <div>
-                    <label for="last_name"></label>
+                    <label for="last_name" class="my-1 text-light fst-normal">Last name</label>
                     <input type="text" class="form-control custom-input" id="last_name" name="last_name" placeholder="Last name" required>
                 </div>
                 <div>
-                    <label for="position"></label>
+                    <label for="position" class="my-1 text-light fst-normal">Position</label>
                     <input type="text" class="form-control custom-input" id="position_user" name="position_user" placeholder="Position" required>
                 </div>
                 <div class="mb-3">
-                    <label for="email"></label>
+                    <label for="email" class="my-1 text-light fst-normal">Email</label>
                     <input type="email" class="form-control custom-input" id="email_user" name="email_user" placeholder="Email" required>
                 </div>
                 <div class="d-flex justify-content-end">

@@ -20,7 +20,7 @@ class ProjectService:
         cursor.execute('SELECT * FROM projects WHERE user_id = ?', (user_id,))
         return cursor.fetchall()
     
-    def create_project(self, project_name, comments, worked_hours, to_do_list, collaborators = []):
+    def create_project(self, project_name, comments, worked_hours, worked_minutes, to_do_list, collaborators = []):
         cursor = self.db.cursor()
         
         start = datetime.now().strftime('%d-%m-%Y')
@@ -28,9 +28,15 @@ class ProjectService:
         status = True
         user_id = 1
 
+        if worked_hours == "":
+            worked_hours = 0
+        
+        if worked_minutes == "":
+            worked_minutes = 0
+
         cursor.execute('''
-            INSERT INTO projects (project_name, comments, start, finish, status, worked_hours, to_do_list, user_id)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)''', (project_name, comments, start, finish, status, worked_hours, to_do_list, user_id))
+            INSERT INTO projects (project_name, comments, start, finish, status, worked_hours, worked_minutes, to_do_list, user_id)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''', (project_name, comments, start, finish, status, worked_hours, worked_minutes, to_do_list, user_id))
         
         project_id = cursor.lastrowid
 
@@ -62,7 +68,7 @@ class ProjectService:
             return False
         return True
     
-    def update_project(self, project_id, project_name, comments, to_do_list, worker_hours, status):
+    def update_project(self, project_id, project_name, comments, to_do_list, worked_hours, worked_minutes, status):
         try:
             cursor = self.db.cursor()
 
@@ -71,14 +77,17 @@ class ProjectService:
             else:  # In Progress
                 finish = None
 
-            if worker_hours == "":
-                worker_hours = 0
+            if worked_hours == "":
+                worked_hours = 0
+            
+            if worked_minutes == "":
+                worked_minutes = 0
             
             cursor.execute('''
                 UPDATE projects 
-                SET project_name = ?, comments = ?, to_do_list = ?, worked_hours = ?, status = ?, finish = ?
+                SET project_name = ?, comments = ?, to_do_list = ?, worked_hours = ?, worked_minutes = ?, status = ?, finish = ?
                 WHERE id = ?
-            ''', (project_name, comments, to_do_list, worker_hours, status, finish, project_id))
+            ''', (project_name, comments, to_do_list, worked_hours, worked_minutes, status, finish, project_id))
             
             self.db.commit()
 

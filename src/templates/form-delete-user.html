@@ -1,8 +1,8 @@
 {% block content_form_delete_user %}
     <div class="position-fixed top-0 start-0 end-0 bottom-0 bg-light bg-opacity-50 d-flex justify-content-center align-items-center z-index-1050 hidden-delete" id="hidden-delete-user">
         <div class="bg-black p-4 rounded-4 shadow-lg w-100" style="max-width: 32rem; position: relative;">
-            <h4 class="text-center text-light fw-bold mb-4">DELETE USER</h4>
-            <p class="text-center">Are you sure you want to delete this user?</p>
+            <h4 class="text-center text-light fw-semibold mb-4">DELETE USER</h4>
+            <p class="text-center text-light fst-normal">Are you sure you want to delete this user?</p>
             <div class="d-flex justify-content-end">
                 <form id="deleteForm" action="{{ url_for('users.delete_user') }}" method="POST">
                     <input type="hidden" id="userId" name="userId">

@@ -6,14 +6,14 @@
                     <thead>
                         <tr>
                             <th scope="col"></th>
-                            <th scope="col" class="align-middle">Project name</th>
-                            <th scope="col" class="align-middle">Comments</th>
-                            <th scope="col" class="align-middle">Start</th>
-                            <th scope="col" class="align-middle">Finish</th>
-                            <th scope="col" class="align-middle">Status</th>
+                            <th scope="col" class="text-center align-middle">Project name</th>
+                            <th scope="col" class="text-center align-middle">Comments</th>
+                            <th scope="col" class="text-center align-middle">Start</th>
+                            <th scope="col" class="text-center align-middle">Finish</th>
+                            <th scope="col" class="text-center align-middle">Status</th>
                             <th scope="col" class="text-center align-middle">Collaborators</th>
-                            <th scope="col" class="align-middle">Worked hours</th>
-                            <th scope="col" class="align-middle">To do list</th>
+                            <th scope="col" class="text-center align-middle">Worked hours</th>
+                            <th scope="col" class="text-center align-middle">To do list</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -30,19 +30,19 @@
                                             
                                             <div class="menu-admin position-absolute mt-2 py-2 border border-light bg-black text-light hidden-menu-admin d-flex" style="width: auto;" data-menu="{{ project.id }}">
                                                 <img src="{{ url_for('static', filename='img/assigned-icon.svg') }}" alt="assign" title="Assigned project" class="cursor-pointer mx-2" onclick="assignedProject('{{ project[0] }}')">
-                                                <img src="{{ url_for('static', filename='img/update-icon.svg') }}" alt="update" title="Update project" class="cursor-pointer" onclick="editProject('{{ project.id }}', '{{ project.project_name}}', '{{ project.comments}}', '{{ project.worked_hours}}', '{{ project.to_do_list}}', '{{ project.status}}')">
+                                                <img src="{{ url_for('static', filename='img/update-icon.svg') }}" alt="update" title="Update project" class="cursor-pointer" onclick="editProject('{{ project.id }}', '{{ project.project_name}}', '{{ project.comments}}', '{{ project.worked_hours}}', '{{ project.worked_minutes}}', '{{ project.to_do_list}}', '{{ project.status}}')">
                                                 <img src="{{ url_for('static', filename='img/delete-icon.svg') }}" alt="delete" title="Delete project" class="cursor-pointer mx-2" onclick="deleteProject('{{ project[0] }}')">
                                             </div>
                                         </td>
                                         <td class="align-middle">{{ project.project_name }}</td>
                                         <td class="align-middle">{{ project.comments }}</td>
-                                        <td class="align-middle">{{ project.start }}</td>
-                                        <td class="align-middle">
+                                        <td class="text-center align-middle">{{ project.start }}</td>
+                                        <td class="text-center align-middle">
                                             {% if project.finish != None %}
                                                 {{ project.finish }}
                                             {% endif %}
                                         </td>
-                                        <td class="align-middle">
+                                        <td class="text-center align-middle">
                                             {% if project.status == 1 %}
                                                 In progress
                                             {% elif project.status == 0 %}
@@ -52,7 +52,9 @@
                                             {% endif %}
                                         </td>
                                         <td class="text-center align-middle">{{ project.collaborators }}</td>
-                                        <td class="align-middle">{{ project.worked_hours }} hours</td>
+                                        <td class="text-center align-middle">
+                                            {{ '%d:%02dhs' | format(project.worked_hours, project.worked_minutes) }}
+                                        </td>
                                         <td class="align-middle">{{ project.to_do_list }}</td>
                                     </tr>
                                 {% endif %}    
