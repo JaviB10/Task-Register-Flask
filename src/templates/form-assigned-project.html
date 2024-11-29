@@ -1,8 +1,7 @@
 {% block content_form_assigned_project %}
     <div class="position-fixed top-0 start-0 end-0 bottom-0 bg-light bg-opacity-50 d-flex justify-content-center align-items-center z-index-1050 hidden-form-assigned" id="hidden-form-assigned-admin">
         <div class="bg-black p-4 rounded shadow-lg w-100" style="max-width: 32rem; position: relative;">
-            <form action="{{ url_for('projects.update_assigned_project') }}" method="POST">
-                <input type="hidden" id="projectID" name="projectID">
+            <form id="form-assigned-project" action="" method="POST">
                 <h4 class="text-center text-light fw-semibold mb-4">ASSIGNED PROJECT</h4>
                 <div class="mb-3">
                     <label for="completed" class="mb-1 text-light fw-normal">Assigned project?</label>
@@ -16,7 +15,7 @@
                     </select>
                 </div>
                 <div class="d-flex justify-content-end">
-                    <button type="button" id="close-form" class="btn btn-danger me-2" onclick="closeFormAssigned()">Close</button>
+                    <button type="button" id="close-form" class="btn btn-danger me-2" onclick="closeFormAssignedProject()">Close</button>
                     <button type="submit" class="btn btn-success">Update</button>
                 </div>
             </form>

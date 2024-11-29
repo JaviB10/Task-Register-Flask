@@ -19,67 +19,69 @@ class UserService:
         cursor.execute('SELECT * FROM users WHERE email = ?', (email,))
         return cursor.fetchone()
     
-    def create_user(self, name, last_name, position, email, role):
+    def create_user(self, name, last_name, position, email):
         cursor = self.db.cursor()
+
+        cursor.execute('SELECT * FROM users WHERE email = ?', (email,))
+        user = cursor.fetchone()
+        
+        if user:
+            return {"status": 400, "message": "The email has already been taken."}
+
+        role = "user"
+
         cursor.execute('''
             INSERT INTO users (name, last_name, position, email, role)
             VALUES (?, ?, ?, ?, ?)
         ''', (name, last_name, position, email, role))
+
         self.db.commit()
-        return cursor.lastrowid
+
+        return {"status": 200, "message": "User created successfully."}
+    
+    def update_user(self, user_id, name, last_name, position, email):
+        cursor = self.db.cursor()
+
+        cursor.execute('SELECT * FROM users WHERE id = ?', (user_id,))
+        user = cursor.fetchone()
+
+        if not user:
+            return {"status": 404, "message": "User not found."}
+        
+        if email != user['email']:
+            cursor.execute('SELECT * FROM users WHERE email = ?', (email,))
+            user = cursor.fetchone()
+            
+            if user:
+                return {"status": 400, "message": "The email has already been taken."}
+        
+        cursor.execute('UPDATE users SET name = ?, last_name = ?, position = ?, email = ? WHERE id = ?', (name, last_name, position, email, user_id))
+        
+        self.db.commit()
+
+        return {"status": 200, "message": "User updated successfully."}
+        
     
     def delete_user(self, user_id):
         cursor = self.db.cursor()
-        print(user_id)
-        # Comprobar si el usuario existe
-        cursor.execute('''
-            SELECT * FROM users WHERE id = ?
-        ''', (user_id,))
+
+        cursor.execute('SELECT * FROM users WHERE id = ?', (user_id,))
         user = cursor.fetchone()
+
         if not user:
-            print(f"El usuario con id {user_id} no existe.")
-            return False
+            return {"status": 404, "message": "User not found."}
+        
+        cursor.execute('SELECT * FROM projects WHERE user_id = ?', (user_id,))
+        projects = cursor.fetchall()
+
+        if projects:
+            for project in projects:
+                if project['status'] == 1:
+                    return {"status": 400, "message": "The user cannot be deleted because they have unfinished projects."}
         
         # Intentar eliminar el usuario
-        cursor.execute('''
-            DELETE FROM users WHERE id = ?
-        ''', (user_id,))
+        cursor.execute('DELETE FROM users WHERE id = ?', (user_id,))
+
         self.db.commit()
         
-        if cursor.rowcount == 0:
-            print(f"No se pudo eliminar el usuario con id {user_id}.")
-            return False
-        
-        print(f"Usuario con id {user_id} eliminado correctamente.")
-        return True
-    
-    def update_user(self, user_id, name, last_name, position, email, current_email):
-        try:
-            cursor = self.db.cursor()
-            
-            if email != current_email:
-                cursor.execute('SELECT * FROM users WHERE email = ?', (email,))
-                user = cursor.fetchone()
-                
-                if user:
-                    if cursor.rowcount > 0:
-                        return True
-                    else:
-                        return False
-            
-            cursor.execute('''
-                UPDATE users 
-                SET name = ?, last_name = ?, position = ?, email = ?
-                WHERE id = ?
-            ''', (name, last_name, position, email, user_id))
-            
-            self.db.commit()
-
-            if cursor.rowcount > 0:
-                return True
-            else:
-                return False
-            
-        except Exception as e:
-            print(f"Error al actualizar el usuario: {e}")
-            return False
+        return {"status": 200, "message": "User updated successfully."}

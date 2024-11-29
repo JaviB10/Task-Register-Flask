@@ -1,20 +1,31 @@
 //Elementos del DOM
-const buttonAddProjectAdmin = document.getElementById('add-project-admin');
-const formAdmin = document.getElementById('hidden-form-admin');
-const buttonCloseForm = document.getElementById('close-form');
-const buttonUpdateProjectAdmin = document.getElementById('hidden-form-update-admin');
-const buttonAssignedProjectAdmin = document.getElementById('hidden-form-assigned-admin');
-const buttonDeleteProjectAdmin = document.getElementById('hidden-delete-admin');
-const buttonCreateProjectAmdmin = document.getElementById('create-project');
+const formNewProject = document.getElementById('hidden-form-admin');
+const formUpdateProject = document.getElementById('hidden-form-update-admin');
+const formDeleteProject = document.getElementById('hidden-delete-admin');
+const formAssignedProject = document.getElementById('hidden-form-assigned-admin');
 
-//Funcion para abrir el formulario y agregar un nuevo proyecto
-const openForm = () => {
-    formAdmin.classList.remove('hidden-form'); //Muestra el formulario
-}
+const showToast = (icon, title, timer = 1500) => {
+    const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: timer,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+        }
+    });
 
-const closeForm = () => {
-    formAdmin.classList.add('hidden-form'); //Oculta el formulario
-}
+    Toast.fire({
+        icon: icon,
+        title: title
+    }).then((result) => {
+        if (result.dismiss === Swal.DismissReason.timer) {
+            window.location.reload();
+        }
+    });
+};
 
 const toggleMenu = (event, menuID) => {
     event.preventDefault();
@@ -31,18 +42,53 @@ const toggleMenu = (event, menuID) => {
     }
 }
 
-//Muestra el formulario para actualizar un proyecto y cierra el menu del admin
-const editProject = (menuID, project_name, comments, worked_hours, worked_minutes, to_do_list, status) => {  
-    
-    buttonUpdateProjectAdmin.classList.remove('hidden-form-update');
+const openFormNewProject = () => {
+    formNewProject.classList.remove('hidden-form'); //Muestra el formulario
+}
+const closeFormNewProject = () => {
+    formNewProject.classList.add('hidden-form'); //Oculta el formulario
+}
 
-    const menuAdmin = document.querySelector(`.menu-admin[data-menu="${menuID}"]`);
-    if (menuAdmin) {
-        menuAdmin.classList.add('hidden-menu-admin');
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.querySelector("#hidden-form-admin form"); // Selecciona el formulario dentro del div
+
+    form.addEventListener("submit", async function (e) {
+        e.preventDefault(); // Evita el comportamiento por defecto del formulario
+
+        const formData = new FormData(form); // Captura los datos del formulario
+
+        try {
+            const response = await fetch(form.action, {
+                method: form.method,
+                body: formData,
+            });
+
+            const res = await response.json(); // Procesa la respuesta 
+            
+            closeFormNewProject()
+
+            if (res.status == 200) {
+                showToast("success", "Project created successfully");
+            } else {
+                showToast("error", "Internal Server Error");
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    });
+});
+
+const openFormUpdateProject = (project_id, project_name, comments, worked_hours, worked_minutes, to_do_list, status) => {  
+    
+    formUpdateProject.classList.remove('hidden-form-update');
+
+    const menu = document.querySelector(`.menu-admin[data-menu="${project_id}"]`);
+    if (menu) {
+        menu.classList.add('hidden-menu-admin');
     }
     
     const projectData = {
-        id: menuID,
+        id: project_id,
         project_name: project_name,
         comments: comments,
         worked_hours: worked_hours,
@@ -60,57 +106,17 @@ const editProject = (menuID, project_name, comments, worked_hours, worked_minute
     document.querySelector('#status_project').value = projectData.status;
 } 
 
-const closeFormUpdate = () => {
-    buttonUpdateProjectAdmin.classList.add('hidden-form-update'); //Alterna la visibilidad del formulario para actualizar el proyecto
-}
-
-const assignedProject = (menuID) => {
-    buttonAssignedProjectAdmin.classList.remove('hidden-form-assigned');
-    
-    
-    const menuAdmin = document.querySelector(`.menu-admin[data-menu="${menuID}"]`);
-    if (menuAdmin) {
-        console.log("este es el id que llega", menuID);
-        menuAdmin.classList.add('hidden-menu-admin');
-    }
-
-    const projectData = {
-        id: menuID,
-    };
-    console.log("este es el nuevo id", projectData.id);
-    document.querySelector('#projectID').value = projectData.id
-}
-
-const closeFormAssigned = () => {
-    buttonAssignedProjectAdmin.classList.toggle('hidden-form-assigned'); //Alterna la visibilidad del formulario para actualizar el proyecto
-}
-
-//Muestra el modal para confirmar la eliminacion de un proyecto y cierra el menu del admin
-const deleteProject = (projectId) => {
-    console.log(projectId);
-    
-    document.getElementById('projectId').value = projectId;
-
-    buttonDeleteProjectAdmin.classList.remove('hidden-delete');
-
-    const deleteModal = document.querySelector(`.menu-admin[data-menu="${projectId}"]`);
-    if (deleteModal) {
-        deleteModal.classList.add('hidden-menu-admin')
-    }
-}
-
-const closeDelete = () => {
-    buttonDeleteProjectAdmin.classList.toggle('hidden-delete'); //Alterna la visibilidad del formulario para actualizar el proyecto
+const closeFormUpdateProject = () => {
+    formUpdateProject.classList.add('hidden-form-update');
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-    const form = document.querySelector("#hidden-form-admin form"); // Selecciona el formulario dentro del div
-    const closeFormButton = document.getElementById("close-form"); // Botón para cerrar el formulario
+    const form = document.querySelector("#hidden-form-update-admin form");
 
     form.addEventListener("submit", async function (e) {
-        e.preventDefault(); // Evita el comportamiento por defecto del formulario
+        e.preventDefault();
 
-        const formData = new FormData(form); // Captura los datos del formulario
+        const formData = new FormData(form);
 
         try {
             const response = await fetch(form.action, {
@@ -118,95 +124,97 @@ document.addEventListener("DOMContentLoaded", function () {
                 body: formData,
             });
 
-            const result = await response.json(); // Procesa la respuesta JSON
+            const res = await response.json();
+
+            closeFormUpdateProject()
             
-            if (result.status == 201) {
-                closeForm()
-                const Toast = Swal.mixin({
-                    toast: true,
-                    position: "top-end",
-                    showConfirmButton: false,
-                    timer: 3000,
-                    timerProgressBar: true,
-                    didOpen: (toast) => {
-                        toast.onmouseenter = Swal.stopTimer;
-                        toast.onmouseleave = Swal.resumeTimer;
-                    }
-                });
-    
-                Toast.fire({
-                    icon: "success",
-                    title: "Project created successfully"
-                }).then((result) => {
-                    if (result.dismiss === Swal.DismissReason.timer) {
-                        // Refrescar la página si el temporizador completó
-                        window.location.reload();
-                    }
-                });
+            if (res.status == 200) {
+                showToast("success", "Project updated successfully");
+            } else if (res.status == 404) {
+                showToast("error", "Project not found");
             } else {
-                closeForm()
-                const Toast = Swal.mixin({
-                    toast: true,
-                    position: "top-end",
-                    showConfirmButton: false,
-                    timer: 3000,
-                    timerProgressBar: true,
-                    didOpen: (toast) => {
-                        toast.onmouseenter = Swal.stopTimer;
-                        toast.onmouseleave = Swal.resumeTimer;
-                    }
-                });
-    
-                Toast.fire({
-                    icon: "error",
-                    title: "The user has not provided all the required values"
-                }).then((result) => {
-                    if (result.dismiss === Swal.DismissReason.timer) {
-                        // Refrescar la página si el temporizador completó
-                        window.location.reload();
-                    }
-                });
+                showToast("error", "Internal Server Error");
             }
         } catch (error) {
-            closeForm()
-            const Toast = Swal.mixin({
-                toast: true,
-                position: "top-end",
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true,
-                didOpen: (toast) => {
-                    toast.onmouseenter = Swal.stopTimer;
-                    toast.onmouseleave = Swal.resumeTimer;
-                }
-            });
-    
-            Toast.fire({
-                icon: "error",
-                title: "Internal Server Error"
-            }).then((result) => {
-                if (result.dismiss === Swal.DismissReason.timer) {
-                    // Refrescar la página si el temporizador completó
-                    window.location.reload();
-                }
-            });
+            console.log(error);
         }
-    });
-
-    // Cerrar el formulario
-    closeFormButton.addEventListener("click", function () {
-        document.getElementById("hidden-form-admin").classList.add("hidden-form");
     });
 });
 
+const openFormDeleteProject = (project_id) => {
+    
+    const form = document.getElementById('form-delete');
+    
+    const action = `/projects/delete_project/${project_id}`;
+    form.action = action;
+
+    formDeleteProject.classList.remove('hidden-delete');
+
+    const menu = document.querySelector(`.menu-admin[data-menu="${project_id}"]`);
+    if (menu) {
+        menu.classList.add('hidden-menu-admin')
+    }
+}
+
+const closeFormDeleteProject = () => {
+    formDeleteProject.classList.toggle('hidden-delete');
+}
+
 document.addEventListener("DOMContentLoaded", function () {
-    const form = document.querySelector("#hidden-form-update-admin form"); // Selecciona el formulario dentro del div
-    const closeFormButton = document.getElementById("close-form"); // Botón para cerrar el formulario
+    const deleteForm = document.getElementById("form-delete");
+
+    deleteForm.addEventListener("submit", async function (e) {
+        e.preventDefault(); // Prevenir el envío estándar del formulario
+
+        try {
+            const response = await fetch(deleteForm.action, {
+                method: 'POST',
+            });
+
+            const res = await response.json();
+
+            closeFormDeleteProject()
+
+            if (res.status == 200) {
+                showToast("success", "Project deleted successfully");
+            } else if (res.status == 400) {
+                showToast("error", "The project is in progress, so it cannot be deleted");
+            } else if (res.status == 404) {
+                showToast("error", "Project not found");
+            } else {
+                showToast("error", "Internal Server Error");
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    });
+});
+
+const openFormAssignedProject = (project_id) => {
+    const form = document.getElementById('form-assigned-project');
+    
+    const action = `/projects/update_assigned_project/${project_id}`;
+    form.action = action;
+
+    formAssignedProject.classList.remove('hidden-form-assigned');
+    
+    const menu = document.querySelector(`.menu-admin[data-menu="${project_id}"]`);
+    if (menu) {
+        menu.classList.add('hidden-menu-admin');
+    }
+}
+
+const closeFormAssignedProject = () => {
+    formAssignedProject.classList.toggle('hidden-form-assigned');
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.querySelector("#hidden-form-assigned-admin form")
 
     form.addEventListener("submit", async function (e) {
-        e.preventDefault(); // Evita el comportamiento por defecto del formulario
+        e.preventDefault();
 
-        const formData = new FormData(form); // Captura los datos del formulario
+        const formData = new FormData(form);
 
         try {
             const response = await fetch(form.action, {
@@ -214,84 +222,20 @@ document.addEventListener("DOMContentLoaded", function () {
                 body: formData,
             });
 
-            const result = await response.json(); // Procesa la respuesta JSON
-            
-            if (result.status == 200) {
-                closeFormUpdate()
-                const Toast = Swal.mixin({
-                    toast: true,
-                    position: "top-end",
-                    showConfirmButton: false,
-                    timer: 3000,
-                    timerProgressBar: true,
-                    didOpen: (toast) => {
-                        toast.onmouseenter = Swal.stopTimer;
-                        toast.onmouseleave = Swal.resumeTimer;
-                    }
-                });
-    
-                Toast.fire({
-                    icon: "success",
-                    title: "Project updated successfully"
-                }).then((result) => {
-                    if (result.dismiss === Swal.DismissReason.timer) {
-                        // Refrescar la página si el temporizador completó
-                        window.location.reload();
-                    }
-                });
-            } else {
-                closeFormUpdate()
-                const Toast = Swal.mixin({
-                    toast: true,
-                    position: "top-end",
-                    showConfirmButton: false,
-                    timer: 3000,
-                    timerProgressBar: true,
-                    didOpen: (toast) => {
-                        toast.onmouseenter = Swal.stopTimer;
-                        toast.onmouseleave = Swal.resumeTimer;
-                    }
-                });
-    
-                Toast.fire({
-                    icon: "error",
-                    title: "The user has not provided all the required values"
-                }).then((result) => {
-                    if (result.dismiss === Swal.DismissReason.timer) {
-                        // Refrescar la página si el temporizador completó
-                        window.location.reload();
-                    }
-                });
-                
-            }
-        } catch (error) {
-            closeForm()
-                const Toast = Swal.mixin({
-                    toast: true,
-                    position: "top-end",
-                    showConfirmButton: false,
-                    timer: 3000,
-                    timerProgressBar: true,
-                    didOpen: (toast) => {
-                        toast.onmouseenter = Swal.stopTimer;
-                        toast.onmouseleave = Swal.resumeTimer;
-                    }
-                });
-    
-            Toast.fire({
-                icon: "error",
-                title: "Internal Server Error"
-            }).then((result) => {
-                if (result.dismiss === Swal.DismissReason.timer) {
-                    // Refrescar la página si el temporizador completó
-                    window.location.reload();
-                }
-            });
-        }
-    });
+            const res = await response.json();
 
-    // Cerrar el formulario
-    closeFormButton.addEventListener("click", function () {
-        document.getElementById("hidden-form-update-admin").classList.add("hidden-form-update");
+            closeFormAssignedProject()
+
+            if (res.status == 200) {
+                showToast("success", "Project assigned successfully");
+            } else if (res.status == 404) {
+                showToast("error", "Project or User not found");
+            } else {
+                showToast("error", "Internal Server Error");
+            }
+
+        } catch (error) {
+            console.log(error);
+        }
     });
 });

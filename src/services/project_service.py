@@ -12,7 +12,7 @@ class ProjectService:
     
     def get_project_by_id(self, project_id):
         cursor = self.db.cursor()
-        cursor.execute('SELECT * FROM projects WHERE id = ?', (project_id))
+        cursor.execute('SELECT * FROM projects WHERE id = ?', (project_id,))
         return cursor.fetchone()
     
     def get_projects_by_user(self, user_id):
@@ -47,30 +47,38 @@ class ProjectService:
             ''', (project_id, user_id))
 
         self.db.commit()
-        return project_id
+        
+        return {"status": 200, "message": "Project created successfully."}
     
     def delete_project(self, project_id):
         cursor = self.db.cursor()
+
+        cursor.execute('SELECT * FROM projects WHERE id = ?', (project_id,))
+        project = cursor.fetchone()
+
+        if not project:
+            return {"status": 404, "message": "Project not found."}
         
-        cursor.execute('''
-            DELETE FROM project_collaborators 
-            WHERE project_id = ?
-        ''', (project_id,))
+        if project['status'] == 1:
+            return {"status": 400, "message": "The project is in progress, so it cannot be deleted."}
         
-        cursor.execute('''
-            DELETE FROM projects 
-            WHERE id = ?
-        ''', (project_id,))
+        cursor.execute('DELETE FROM project_collaborators WHERE project_id = ?', (project_id,))
+        
+        cursor.execute('DELETE FROM projects WHERE id = ?', (project_id,))
         
         self.db.commit()
 
-        if cursor.rowcount == 0:
-            return False
-        return True
+        return {"status": 200, "message": "Project deleted successfully."}
     
     def update_project(self, project_id, project_name, comments, to_do_list, worked_hours, worked_minutes, status):
         try:
             cursor = self.db.cursor()
+
+            cursor.execute('SELECT * FROM projects WHERE id = ?', (project_id,))
+            project = cursor.fetchone()
+
+            if not project:
+                return {"status": 404, "message": "Project not found."}
 
             if status == 0:  # Finished
                 finish = datetime.now().strftime('%d-%m-%Y')
@@ -91,10 +99,7 @@ class ProjectService:
             
             self.db.commit()
 
-            if cursor.rowcount > 0:
-                return True
-            else:
-                return False
+            return {"status": 200, "message": "Project updated successfully."}
             
         except Exception as e:
             print(f"Error al actualizar el proyecto: {e}")
@@ -104,20 +109,24 @@ class ProjectService:
         try:
             cursor = self.db.cursor()
 
-            if int(user_id) != 0:
+            cursor.execute('SELECT * FROM projects WHERE id = ?', (project_id,))
+            project = cursor.fetchone()
 
-                cursor.execute('''
-                    UPDATE projects 
-                    SET user_id = ?
-                    WHERE id = ?
-                ''', (user_id, project_id))
+            if not project:
+                return {"status": 404, "message": "Project not found."}
+            
+            cursor.execute('SELECT * FROM users WHERE id = ?', (user_id,))
+            user = cursor.fetchone()
+
+            if not user:
+                return {"status": 404, "message": "User not found."}
+
+            if int(user_id) != 0:
+                cursor.execute('UPDATE projects SET user_id = ? WHERE id = ?', (user_id, project_id))
 
                 self.db.commit()
 
-            if cursor.rowcount > 0:
-                return True
-            else:
-                return False
+                return {"status": 200, "message": "Project updated successfully."}
 
         except Exception as e:
             print(f"Error al asignar el proyecto a un usuario: {e}")

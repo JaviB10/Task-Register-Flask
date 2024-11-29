@@ -1,6 +1,6 @@
 {% block content_form_update_project %}
     <div class="position-fixed top-0 start-0 end-0 bottom-0 bg-light bg-opacity-50 d-flex justify-content-center align-items-center z-index-1050 hidden-form-update" id="hidden-form-update-admin">
-        <div class="bg-black p-4 rounded shadow-lg w-100" style="max-width: 32rem; position: relative;">
+        <div class="bg-black p-4 rounded shadow-lg w-100" style="max-width: 500px; position: relative;">
             <form action="{{ url_for('projects.update_project') }}" method="POST">
                 <input type="hidden" id="project_id" name="project_id">
                 <h4 class="text-center text-light fw-semibold mb-4">UPDATE PROJECT</h4>
@@ -8,31 +8,33 @@
                     <label for="project_name" class="my-1 text-light fst-normal">Project name</label>
                     <input type="text" class="form-control custom-input" id="project_name_update" name="project_name" required>
                 </div>
-                <div class="mt-2">
+                <div>
                     <label for="comments" class="my-1 text-light fst-normal">Comments</label>
                     <textarea type="text" class="form-control custom-input" id="comments_project" name="comments" rows="3" required></textarea>
                 </div>
-                <div class="mt-2">
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <label for="worked_hours" class="my-1 text-light fst-normal">Worked hours</label>
+                        <input type="number" min="0" class="form-control custom-input" id="worked_hours_update" name="worked_hours">
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label for="worked_minutes" class="my-1 text-light fst-normal">Worked minutes</label>
+                        <input type="number" min="0" max="59" class="form-control custom-input" id="worked_minutes_update" name="worked_minutes">
+                    </div>
+                </div>
+                <div>
                     <label for="to_do_list" class="my-1 text-light fst-normal">To do list</label>
                     <textarea  class="form-control custom-input" id="to_do_list" name="to_do_list" rows="3"></textarea>
                 </div>
-                <div class="mt-2">
-                    <label for="worked_hours" class="my-1 text-light fst-normal">Worked hours</label>
-                    <input type="number" min="0" class="form-control custom-input" id="worked_hours_update" name="worked_hours">
-                </div>
-                <div class="mt-2">
-                    <label for="worked_minutes" class="my-1 text-light fst-normal">Worked minutes</label>
-                    <input type="number" min="0" max="59" class="form-control custom-input" id="worked_minutes_update" name="worked_minutes">
-                </div>
-                <div class="mt-2 mb-4">
+                <div class="mb-3">
                     <label for="status_project" class="my-1 text-light fst-normal">Project finished?</label>
                     <select id="status_project" name="status_project" class="form-select custom-input">
                         <option value="1" {% if status == 1 %}selected{% endif %}>In Progress</option>
                         <option value="0" {% if status == 0 %}selected{% endif %}>Finished</option>
                     </select>
                 </div>
-                <div class="d-flex justify-content-end">
-                    <button type="button" id="close-form" class="btn btn-danger me-2" onclick="closeFormUpdate()">Close</button>
+                <div class="d-flex justify-content-end flex-wrap gap-2">
+                    <button type="button" id="close-form" class="btn btn-danger me-2" onclick="closeFormUpdateProject()">Close</button>
                     <button type="submit" class="btn btn-success">Update</button>
                 </div>
             </form>

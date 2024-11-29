@@ -27,7 +27,6 @@
                             <th scope="col" class="text-center align-middle">Status</th>
                             <th scope="col" class="text-center align-middle">Collaborators</th>
                             <th scope="col" class="text-center align-middle">Worked hours</th>
-                            <th scope="col" class="text-center align-middle">To do list</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -68,7 +67,6 @@
                                     <td class="text-center align-middle">
                                         {{ '%d:%02dhs' | format(project.worked_hours, project.worked_minutes) }}
                                     </td>
-                                    <td class="align-middle">{{ project.to_do_list }}</td>
                             {% endfor %}
                         </tr>
                     </tbody>

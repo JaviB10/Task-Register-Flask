@@ -1,18 +1,30 @@
 //Elementos del DOM
-const buttonNewUserAdmin = document.getElementById('add-user-admin');
-const formAdmin = document.getElementById('hidden-new-user');
-const buttonCloseForm = document.getElementById('close-form');
-const buttonUpdateUserAdmin = document.getElementById('hidden-form-update-user');
-const buttonDeleteUserAdmin = document.getElementById('hidden-delete-user');
+const formNewUser = document.getElementById('hidden-new-user');
+const formUpdateUser = document.getElementById('hidden-form-update-user');
+const formDeleteUser = document.getElementById('hidden-delete-user');
 
-//Funcion para abrir el formulario y agregar un nuevo proyecto
-const openForm = () => {
-    formAdmin.classList.remove('hidden-new-user'); //Muestra el formulario
-}
+const showToast = (icon, title, timer = 1500) => {
+    const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: timer,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+        }
+    });
 
-const closeForm = () => {
-    formAdmin.classList.add('hidden-new-user'); //Oculta el formulario
-}
+    Toast.fire({
+        icon: icon,
+        title: title
+    }).then((result) => {
+        if (result.dismiss === Swal.DismissReason.timer) {
+            window.location.reload();
+        }
+    });
+};
 
 const toggleMenu = (event, menuID) => {
     event.preventDefault();
@@ -29,14 +41,52 @@ const toggleMenu = (event, menuID) => {
     }
 }
 
-//Muestra el formulario para actualizar un usuario y cierra el menu del admin
-const editUser = (userID, name, last_name, position, email) => {  
+const openFormNewUser = () => {
+    formNewUser.classList.remove('hidden-new-user');
+}
 
-    buttonUpdateUserAdmin.classList.remove('hidden-form-update');
+const closeFormNewUser = () => {
+    formNewUser.classList.add('hidden-new-user'); 
+}
 
-    const menuAdmin = document.querySelector(`.menu-admin[data-menu="${userID}"]`);
-    if (menuAdmin) {
-        menuAdmin.classList.add('hidden-menu-admin');
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.querySelector("#hidden-new-user form");
+
+    form.addEventListener("submit", async function (e) {
+        e.preventDefault(); // Evita el comportamiento por defecto del formulario
+
+        const formData = new FormData(form); // Captura los datos del formulario
+
+        try {
+            const response = await fetch(form.action, {
+                method: form.method,
+                body: formData,
+            });
+
+            const res = await response.json();
+            
+            closeFormNewUser()
+
+            if (res.status == 200) {
+                showToast("success", "User created successfully");
+            } else if (res.status == 400) {
+                showToast("error", "The email has already been taken");
+            }else {
+                showToast("error", "Internal Server Error");
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    });
+});
+
+const openFormUpdateUser = (userID, name, last_name, position, email) => {  
+
+    formUpdateUser.classList.remove('hidden-form-update');
+
+    const menu = document.querySelector(`.menu-admin[data-menu="${userID}"]`);
+    if (menu) {
+        menu.classList.add('hidden-menu-admin');
     }
 
     const userData = {
@@ -54,24 +104,88 @@ const editUser = (userID, name, last_name, position, email) => {
     document.querySelector('#user_id').value = userData.id
 } 
 
-const closeFormUpdate = () => {
-    buttonUpdateUserAdmin.classList.toggle('hidden-form-update'); //Alterna la visibilidad del formulario para actualizar el proyecto
+const closeFormUpdateUser = () => {
+    formUpdateUser.classList.toggle('hidden-form-update'); //Alterna la visibilidad del formulario para actualizar el proyecto
 }
 
-//Muestra el modal para confirmar la eliminacion de un proyecto y cierra el menu del admin
-const deleteUser = (userId) => {
-    console.log(userId);
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.querySelector("#hidden-form-update-user form");
+
+    form.addEventListener("submit", async function (e) {
+        e.preventDefault(); // Evita el comportamiento por defecto del formulario
+
+        const formData = new FormData(form); // Captura los datos del formulario
+
+        try {
+            const response = await fetch(form.action, {
+                method: form.method,
+                body: formData,
+            });
+
+            const res = await response.json();
+            
+            closeFormUpdateUser()
+
+            if (res.status == 200) {
+                showToast("success", "User updated successfully");
+            } else if (res.status == 400) {
+                showToast("error", "The email has already been taken");
+            } else if (res.status == 404) {
+                showToast("error", "User not found");
+            } else {
+                showToast("error", "Internal Server Error");
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    });
+});
+
+const openFormDeleteUser = (user_id) => {
     
-    document.getElementById('userId').value = userId;
+    const form = document.getElementById('form-delete-user');
+    
+    const action = `/users/delete_user/${user_id}`;
+    form.action = action;
 
-    buttonDeleteUserAdmin.classList.remove('hidden-delete');
+    formDeleteUser.classList.remove('hidden-delete');
 
-    const deleteModal = document.querySelector(`.menu-admin[data-menu="${userId}"]`);
-    if (deleteModal) {
-        deleteModal.classList.add('hidden-menu-admin')
+    const menu = document.querySelector(`.menu-admin[data-menu="${user_id}"]`);
+    if (menu) {
+        menu.classList.add('hidden-menu-admin')
     }
 }
 
-const closeDelete = () => {
-    buttonDeleteUserAdmin.classList.toggle('hidden-delete'); //Alterna la visibilidad del formulario para actualizar el proyecto
+const closeFormDeleteUser = () => {
+    formDeleteUser.classList.toggle('hidden-delete'); //Alterna la visibilidad del formulario para actualizar el proyecto
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.querySelector("#hidden-delete-user form");
+
+    form.addEventListener("submit", async function (e) {
+        e.preventDefault(); // Prevenir el envío estándar del formulario
+
+        try {
+            const response = await fetch(form.action, {
+                method: 'POST',
+            });
+
+            const res = await response.json();
+
+            closeFormDeleteUser()
+
+            if (res.status == 200) {
+                showToast("success", "User deleted successfully");
+            } else if (res.status == 400) {
+                showToast("error", "The user cannot be deleted because they have unfinished projects");
+            } else if (res.status == 404) {
+                showToast("error", "User not found");
+            } else {
+                showToast("error", "Internal Server Error");
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    });
+});

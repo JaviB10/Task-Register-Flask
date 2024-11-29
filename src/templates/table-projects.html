@@ -29,9 +29,9 @@
                                             </a>
                                             
                                             <div class="menu-admin position-absolute mt-2 py-2 border border-light bg-black text-light hidden-menu-admin d-flex" style="width: auto;" data-menu="{{ project.id }}">
-                                                <img src="{{ url_for('static', filename='img/assigned-icon.svg') }}" alt="assign" title="Assigned project" class="cursor-pointer mx-2" onclick="assignedProject('{{ project[0] }}')">
-                                                <img src="{{ url_for('static', filename='img/update-icon.svg') }}" alt="update" title="Update project" class="cursor-pointer" onclick="editProject('{{ project.id }}', '{{ project.project_name}}', '{{ project.comments}}', '{{ project.worked_hours}}', '{{ project.worked_minutes}}', '{{ project.to_do_list}}', '{{ project.status}}')">
-                                                <img src="{{ url_for('static', filename='img/delete-icon.svg') }}" alt="delete" title="Delete project" class="cursor-pointer mx-2" onclick="deleteProject('{{ project[0] }}')">
+                                                <img src="{{ url_for('static', filename='img/assigned-icon.svg') }}" alt="assign" title="Assigned project" class="cursor-pointer mx-2" onclick="openFormAssignedProject('{{ project.id }}')">
+                                                <img src="{{ url_for('static', filename='img/update-icon.svg') }}" alt="update" title="Update project" class="cursor-pointer" onclick="openFormUpdateProject('{{ project.id }}', '{{ project.project_name}}', '{{ project.comments}}', '{{ project.worked_hours}}', '{{ project.worked_minutes}}', '{{ project.to_do_list}}', '{{ project.status}}')">
+                                                <img src="{{ url_for('static', filename='img/delete-icon.svg') }}" alt="delete" title="Delete project" class="cursor-pointer mx-2" onclick="openFormDeleteProject('{{ project.id }}')">
                                             </div>
                                         </td>
                                         <td class="align-middle">{{ project.project_name }}</td>
