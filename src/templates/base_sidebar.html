@@ -15,13 +15,21 @@
                 </a>
             </li>
                 {% if page == 'home' %}
-                    {% block home_admin %}
-                        {% include "sidebar-home-admin.html" %}
-                    {% endblock home_admin %}
+                    {% block sidebar_home %}
+                        {% include "sidebar-home.html" %}
+                    {% endblock sidebar_home %}
                 {% elif page == 'users' %}
                     {% block list_users %}
                         {% include "sidebar-list-users.html" %}
                     {% endblock list_users %}
+                {% elif page == 'projects_user' %}
+                    {% block projects_user %}
+                        {% include "sidebar-projects-user.html" %}
+                    {% endblock projects_user %}
+                {% elif page == 'assigned_projects' %}
+                    {% block assigned_projects %}
+                        {% include "sidebar-assigned-projects.html" %}
+                    {% endblock assigned_projects %}
                 {% endif %}
             <li class="mt-auto">
                 <a href="#">

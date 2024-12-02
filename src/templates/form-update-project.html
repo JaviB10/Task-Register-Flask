@@ -19,12 +19,20 @@
                     </div>
                     <div class="col-12 col-md-6">
                         <label for="worked_minutes" class="my-1 text-light fst-normal">Worked minutes</label>
-                        <input type="number" min="0" max="59" class="form-control custom-input" id="worked_minutes_update" name="worked_minutes">
+                        <input type="number" min="0" max="45" step="15" class="form-control custom-input" id="worked_minutes_update" name="worked_minutes">
                     </div>
                 </div>
                 <div>
                     <label for="to_do_list" class="my-1 text-light fst-normal">To do list</label>
                     <textarea  class="form-control custom-input" id="to_do_list" name="to_do_list" rows="3"></textarea>
+                </div>
+                <div>
+                    <label for="collaborators" class="my-1 text-light fst-normal">Collaborators</label>
+                    <select class="form-control custom-input selectpicker" id="collaborators-select" name="collaborators" multiple data-live-search="true">
+                        {% for user in users %}
+                            <option value="{{ user.id }}">{{ user.name }}</option> 
+                        {% endfor %}
+                    </select>
                 </div>
                 <div class="mb-3">
                     <label for="status_project" class="my-1 text-light fst-normal">Project finished?</label>

@@ -1,8 +1,8 @@
-{% block list_users %}
+{% block projects_user %}
     <li>
-        <a id="add-user-admin" onclick="openFormNewUser()">
-            <img src="{{ url_for('static', filename='img/user-add-icon.svg') }}" alt="">
-            <span>New User</span>
+        <a href="/users">
+            <img src="{{ url_for('static', filename='img/list-users-icon.svg') }}" alt="">
+            <span>List Users</span>
         </a>
     </li>
     <li>
@@ -11,4 +11,4 @@
             <span>Assigned Projects</span>
         </a>
     </li>
-{% endblock list_users %}
+{% endblock projects_user %}

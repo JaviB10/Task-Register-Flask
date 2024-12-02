@@ -12,10 +12,10 @@
                 </div>
                 <div>
                     <div class="h5 mb-1">
-                        ADMIN01
+                        {{ user.name ~ ' ' ~ user.last_name }}
                     </div>
                     <div>
-                        MANAGER
+                        {{ user.position }}
                     </div>
                 </div>
             </div>
@@ -36,8 +36,11 @@
                     <div class="h5 mb-1">
                         Show all users
                     </div>
+                {% elif page == 'assigned_projects' %}
+                    <div class="h5 mb-1">
+                        Show all assigned projects
+                    </div>
                 {% endif %}
-                
             </div>
             <div class="col-md-6 text-md-end" hidden>
                 <button type="button" class="btn btn-outline-info">Export</button>
@@ -57,6 +60,10 @@
         {% block content_table_projects_user %}
             {% include "table-projects-user.html" %}
         {% endblock content_table_projects_user %}
+    {% elif page == 'assigned_projects' %}
+        {% block content_table_assigned_projects %}
+            {% include "table-assigned-projects.html" %}
+        {% endblock content_table_assigned_projects %}
     {% endif %}
     
     {% block content_form_add_project %}
@@ -87,10 +94,14 @@
         {% include "form-assigned-project.html" %}
     {% endblock content_form_assigned_project %}
 
+    {% block view_project_info %}
+        {% include "view-project-info.html" %}
+    {% endblock view_project_info %}
+
 {% endblock content_home %}
 
 {% block block_scripts %}
-    {% if page == 'home' %}
+    {% if page == 'home' or page == 'projects_user' or page == 'assigned_projects'%}
         <script src="{{ url_for('static', filename='js/script-dashboard-admin.js') }}"></script>
     {% elif page == 'users' %}
         <script src="{{ url_for('static', filename='js/script-dashboard-list-users.js') }}"></script>

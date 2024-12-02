@@ -15,18 +15,35 @@ class ProjectService:
         cursor.execute('SELECT * FROM projects WHERE id = ?', (project_id,))
         return cursor.fetchone()
     
-    def get_projects_by_user(self, user_id):
+    def get_projects_by_id(self, project_ids):
         cursor = self.db.cursor()
-        cursor.execute('SELECT * FROM projects WHERE user_id = ?', (user_id,))
+        if not project_ids:
+            return []  # Retornar lista vacía si no hay IDs
+
+        placeholders = ','.join('?' for _ in project_ids)
+        query = f'SELECT * FROM projects WHERE id IN ({placeholders})'
+
+        cursor = self.db.cursor()
+        cursor.execute(query, project_ids)
         return cursor.fetchall()
     
-    def create_project(self, project_name, comments, worked_hours, worked_minutes, to_do_list, collaborators = []):
+    def get_projects_by_user(self, user_id):
+        cursor = self.db.cursor()
+        cursor.execute('SELECT * FROM projects WHERE creator_id = ?', (user_id,))
+        return cursor.fetchall()
+    
+    def get_assigned_projects_by_user(self, user_id):
+        cursor = self.db.cursor()
+        cursor.execute('SELECT * FROM projects WHERE creator_id = ? AND assigned_user_id IS NOT NULL', (user_id,))
+        return cursor.fetchall()
+    
+    def create_project(self, user_id, project_name, comments, worked_hours, worked_minutes, to_do_list, collaborators):
         cursor = self.db.cursor()
         
+        creator_id = user_id
         start = datetime.now().strftime('%d-%m-%Y')
         finish = None 
         status = True
-        user_id = 1
 
         if worked_hours == "":
             worked_hours = 0
@@ -35,16 +52,18 @@ class ProjectService:
             worked_minutes = 0
 
         cursor.execute('''
-            INSERT INTO projects (project_name, comments, start, finish, status, worked_hours, worked_minutes, to_do_list, user_id)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''', (project_name, comments, start, finish, status, worked_hours, worked_minutes, to_do_list, user_id))
+            INSERT INTO projects (project_name, comments, start, finish, status, worked_hours, worked_minutes, to_do_list, creator_id)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''', (project_name, comments, start, finish, status, worked_hours, worked_minutes, to_do_list, creator_id))
         
-        project_id = cursor.lastrowid
+        project_id = cursor.lastrowid  # Obtener el ID del proyecto recién creado
 
-        for user_id in collaborators:
-            cursor.execute('''
-                INSERT INTO project_collaborators(project_id, user_id)
-                VALUES (?, ?)
-            ''', (project_id, user_id))
+        # Insertar colaboradores en la tabla `project_collaborators`
+        if collaborators:
+            for collaborator_id in collaborators:
+                cursor.execute('''
+                    INSERT INTO project_collaborators (project_id, collaborator_id)
+                    VALUES (?, ?)
+                ''', (project_id, collaborator_id))
 
         self.db.commit()
         
@@ -70,7 +89,7 @@ class ProjectService:
 
         return {"status": 200, "message": "Project deleted successfully."}
     
-    def update_project(self, project_id, project_name, comments, to_do_list, worked_hours, worked_minutes, status):
+    def update_project(self, project_id, project_name, comments, to_do_list, worked_hours, worked_minutes, status, collaborators):
         try:
             cursor = self.db.cursor()
 
@@ -96,6 +115,22 @@ class ProjectService:
                 SET project_name = ?, comments = ?, to_do_list = ?, worked_hours = ?, worked_minutes = ?, status = ?, finish = ?
                 WHERE id = ?
             ''', (project_name, comments, to_do_list, worked_hours, worked_minutes, status, finish, project_id))
+
+            creator_id = project["creator_id"]
+            print(creator_id)
+            if collaborators:
+                collaborators = [int(collaborator) for collaborator in collaborators]
+                print(collaborators)
+                if creator_id in collaborators:
+                    return {"status": 400, "message": "The creator of the project cannot be a collaborator."}
+
+                cursor.execute('DELETE FROM project_collaborators WHERE project_id = ?', (project_id,))
+                
+                for collaborator_id in collaborators:
+                    cursor.execute('''
+                        INSERT INTO project_collaborators (project_id, collaborator_id)
+                        VALUES (?, ?)
+                    ''', (project_id, collaborator_id))
             
             self.db.commit()
 
@@ -122,7 +157,7 @@ class ProjectService:
                 return {"status": 404, "message": "User not found."}
 
             if int(user_id) != 0:
-                cursor.execute('UPDATE projects SET user_id = ? WHERE id = ?', (user_id, project_id))
+                cursor.execute('UPDATE projects SET assigned_user_id = ? WHERE id = ?', (user_id, project_id))
 
                 self.db.commit()
 

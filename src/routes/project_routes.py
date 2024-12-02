@@ -17,16 +17,17 @@ def create_project():
     project_service = ProjectService(db)
 
     if request.method == 'POST':
+        user_id = request.form.get('user_id')
         project_name = request.form['project_name']
         comments = request.form['comments']
         worked_hours = request.form['worked_hours']
         worked_minutes = request.form['worked_minutes']
         to_do_list = request.form['to_do_list']
 
-        collaborators_raw = request.form.get('collaborators', '')
-        collaborators = [int(c.strip()) for c in collaborators_raw.split(',') if c.strip().isdigit()]
+        # Recibir lista de IDs de colaboradores
+        collaborators = request.form.getlist('collaborators')
 
-        response = project_service.create_project(project_name, comments, worked_hours, worked_minutes, to_do_list, collaborators = collaborators)
+        response = project_service.create_project(user_id, project_name, comments, worked_hours, worked_minutes, to_do_list, collaborators)
 
         return jsonify({'status': response["status"], 'message': response["message"]}), response["status"]
 
@@ -54,8 +55,11 @@ def update_project():
         worked_hours = request.form['worked_hours']
         worked_minutes = request.form['worked_minutes']
         status = int(request.form['status_project'])
+
+        # Recibir lista de IDs de colaboradores
+        collaborators = request.form.getlist('collaborators')
         
-        response = project_service.update_project(project_id, project_name, comments, to_do_list, worked_hours, worked_minutes, status)
+        response = project_service.update_project(project_id, project_name, comments, to_do_list, worked_hours, worked_minutes, status, collaborators)
 
         return jsonify({'status': response["status"], 'message': response["message"]}), response["status"]
         

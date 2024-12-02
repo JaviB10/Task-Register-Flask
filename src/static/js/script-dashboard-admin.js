@@ -3,6 +3,7 @@ const formNewProject = document.getElementById('hidden-form-admin');
 const formUpdateProject = document.getElementById('hidden-form-update-admin');
 const formDeleteProject = document.getElementById('hidden-delete-admin');
 const formAssignedProject = document.getElementById('hidden-form-assigned-admin');
+const detailProject = document.getElementById('hidden-detail-proyect');
 
 const showToast = (icon, title, timer = 1500) => {
     const Toast = Swal.mixin({
@@ -42,8 +43,10 @@ const toggleMenu = (event, menuID) => {
     }
 }
 
-const openFormNewProject = () => {
+const openFormNewProject = (user_id) => {
     formNewProject.classList.remove('hidden-form'); //Muestra el formulario
+    
+    document.querySelector('#user_id').value = user_id;
 }
 const closeFormNewProject = () => {
     formNewProject.classList.add('hidden-form'); //Oculta el formulario
@@ -78,10 +81,10 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-const openFormUpdateProject = (project_id, project_name, comments, worked_hours, worked_minutes, to_do_list, status) => {  
+const openFormUpdateProject = (project_id, project_name, comments, worked_hours, worked_minutes, to_do_list, status, collaborators) => {  
     
     formUpdateProject.classList.remove('hidden-form-update');
-
+    
     const menu = document.querySelector(`.menu-admin[data-menu="${project_id}"]`);
     if (menu) {
         menu.classList.add('hidden-menu-admin');
@@ -96,6 +99,11 @@ const openFormUpdateProject = (project_id, project_name, comments, worked_hours,
         to_do_list: to_do_list,
         status: status
     };
+    
+    console.log(collaborators);
+    const collaboratorIds = collaborators.split(','); // Convertir a array
+    console.log(collaboratorIds);
+    
 
     document.querySelector('#project_id').value = projectData.id;
     document.querySelector('#project_name_update').value = projectData.project_name;
@@ -104,6 +112,15 @@ const openFormUpdateProject = (project_id, project_name, comments, worked_hours,
     document.querySelector('#worked_minutes_update').value = projectData.worked_minutes;
     document.querySelector('#to_do_list').value = projectData.to_do_list;
     document.querySelector('#status_project').value = projectData.status;
+
+    const select = document.getElementById('collaborators-select');
+    Array.from(select.options).forEach(option => {
+        console.log('Checking option value:', option.value); // Verifica el valor de cada opción
+        option.selected = collaboratorIds.includes(option.value);
+        console.log('Is selected:', option.selected); // Verifica si está seleccionado
+    });
+
+    $('#collaborators-select').selectpicker('refresh');
 } 
 
 const closeFormUpdateProject = () => {
@@ -132,6 +149,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 showToast("success", "Project updated successfully");
             } else if (res.status == 404) {
                 showToast("error", "Project not found");
+            } else if (res.status == 400) {
+                showToast("error", "The creator of the project cannot be a collaborator");
             } else {
                 showToast("error", "Internal Server Error");
             }
@@ -239,3 +258,21 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
+
+const viewDetails = (project_id, project_name, comments, worked_hours, worked_minutes) => {  
+    detailProject.classList.remove('hidden-detail');
+
+    const menu = document.querySelector(`.menu-admin[data-menu="${project_id}"]`);
+    if (menu) {
+        menu.classList.add('hidden-menu-admin');
+    }
+
+    document.querySelector('#project_name_info').textContent = project_name;
+    document.querySelector('#comments_info').textContent = comments;
+    const formattedTime = `${worked_hours}:${worked_minutes.toString().padStart(2, '0')}hs`;
+    document.querySelector('#worked_hours_info').textContent = formattedTime;
+} 
+
+const closeDetail = () => {
+    detailProject.classList.add('hidden-detail'); //Alterna la visibilidad del formulario para actualizar el proyecto
+}

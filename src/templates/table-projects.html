@@ -18,8 +18,8 @@
                     </thead>
                     <tbody>
                         
-                            {% for project in projects %}
-                                {% if project.user_id == 1 %}
+                            {% for project in all_projects %}
+                                
                                     <tr>
                                         <td>
                                             <a href="#" class="text-primary fw-bold text-decoration-none" data-menu="{{ project.id }}" onclick="toggleMenu(event, '{{ project.id }}')">
@@ -29,8 +29,10 @@
                                             </a>
                                             
                                             <div class="menu-admin position-absolute mt-2 py-2 border border-light bg-black text-light hidden-menu-admin d-flex" style="width: auto;" data-menu="{{ project.id }}">
-                                                <img src="{{ url_for('static', filename='img/assigned-icon.svg') }}" alt="assign" title="Assigned project" class="cursor-pointer mx-2" onclick="openFormAssignedProject('{{ project.id }}')">
-                                                <img src="{{ url_for('static', filename='img/update-icon.svg') }}" alt="update" title="Update project" class="cursor-pointer" onclick="openFormUpdateProject('{{ project.id }}', '{{ project.project_name}}', '{{ project.comments}}', '{{ project.worked_hours}}', '{{ project.worked_minutes}}', '{{ project.to_do_list}}', '{{ project.status}}')">
+                                                {% if user.role == 'admin' %}
+                                                    <img src="{{ url_for('static', filename='img/assigned-icon.svg') }}" alt="assign" title="Assigned project" class="cursor-pointer ms-2" onclick="openFormAssignedProject('{{ project.id }}')">
+                                                {% endif %}
+                                                <img src="{{ url_for('static', filename='img/update-icon.svg') }}" alt="update" title="Update project" class="cursor-pointer ms-2" onclick="openFormUpdateProject('{{ project.id }}', '{{ project.project_name}}', '{{ project.comments}}', '{{ project.worked_hours}}', '{{ project.worked_minutes}}', '{{ project.to_do_list}}', '{{ project.status}}', '{{ project.collaborators | join(',') }}')">
                                                 <img src="{{ url_for('static', filename='img/delete-icon.svg') }}" alt="delete" title="Delete project" class="cursor-pointer mx-2" onclick="openFormDeleteProject('{{ project.id }}')">
                                             </div>
                                         </td>
@@ -51,13 +53,13 @@
                                                 Unknown
                                             {% endif %}
                                         </td>
-                                        <td class="text-center align-middle">{{ project.collaborators }}</td>
+                                        <td class="text-center align-middle">{{ project.collaborators | length }}</td>
                                         <td class="text-center align-middle">
                                             {{ '%d:%02dhs' | format(project.worked_hours, project.worked_minutes) }}
                                         </td>
                                         <td class="align-middle">{{ project.to_do_list }}</td>
                                     </tr>
-                                {% endif %}    
+                                    
                             {% endfor %}
                         
                     </tbody>

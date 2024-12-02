@@ -1,18 +1,4 @@
-{% block content_table_projects_user %}
-    <div class="container-fluid my-4">
-        <div class="row align-items-center">
-            <div class="col-md-12 d-flex align-items-center">
-                <div class="profile-icon">
-                    <img src="{{ url_for('static', filename='img/profile-img.png') }}" alt="" class="rounded-circle profile-img-user-details">
-                </div>
-                <div>
-                    <div class="h5">{{ user_profile.name ~ ' ' ~ user_profile.last_name }}</div>
-                    <div class="my-1">{{ user_profile.position }}</div>
-                    <div>{{ user_profile.email }}</div>
-                </div>
-            </div>
-        </div>
-    </div>
+{% block content_table_assigned_projects %}
     <div class="container-fluid py-5">
         <div class="row align-items-center">
             <div class="col-12 table-responsive">
@@ -27,10 +13,12 @@
                             <th scope="col" class="text-center align-middle">Status</th>
                             <th scope="col" class="text-center align-middle">Collaborators</th>
                             <th scope="col" class="text-center align-middle">Worked hours</th>
+                            <th scope="col" class="text-center align-middle">To do list</th>
+                            <th scope="col" class="text-center align-middle">Assigned user</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for project in all_projects %}
+                        {% for project in projects %}
                             <tr>
                                 <td>
                                     <a href="#" class="text-primary fw-bold text-decoration-none" data-menu="{{ project.id }}" onclick="toggleMenu(event, '{{ project.id }}')">
@@ -40,8 +28,7 @@
                                     </a>
                                     
                                     <div class="menu-admin position-absolute mt-2 py-2 border border-light bg-black text-light hidden-menu-admin d-flex" style="width: auto;" data-menu="{{ project.id }}">
-                                        <img src="{{ url_for('static', filename='img/search-icon.svg') }}" alt="" title="Assigned project" class="cursor-pointer mx-2" onclick="viewDetails('{{ project.id }}', '{{ project.project_name}}', '{{ project.comments}}', '{{ project.worked_hours}}', '{{ project.worked_minutes}}')">
-                                        <img src="{{ url_for('static', filename='img/update-icon.svg') }}" alt="update" title="Update project" class="cursor-pointer" onclick="openFormUpdateProject('{{ project.id }}', '{{ project.project_name}}', '{{ project.comments}}', '{{ project.worked_hours}}', '{{ project.worked_minutes}}', '{{ project.to_do_list}}', '{{ project.status}}', '{{ project.collaborators | join(',') }}')">
+                                        <img src="{{ url_for('static', filename='img/update-icon.svg') }}" alt="update" title="Update project" class="cursor-pointer ms-2" onclick="openFormUpdateProject('{{ project.id }}', '{{ project.project_name}}', '{{ project.comments}}', '{{ project.worked_hours}}', '{{ project.worked_minutes}}', '{{ project.to_do_list}}', '{{ project.status}}')">
                                         <img src="{{ url_for('static', filename='img/delete-icon.svg') }}" alt="delete" title="Delete project"  class="cursor-pointer mx-2" onclick="openFormDeleteProject('{{ project[0] }}')">
                                     </div>
                                 
@@ -63,10 +50,16 @@
                                         Unknown
                                     {% endif %}
                                 </td>
-                                <td class="text-center align-middle">{{ project.collaborators | length }}</td>
+                                <td class="text-center align-middle">{{ project.collaborators }}</td>
                                 <td class="text-center align-middle">
                                     {{ '%d:%02dhs' | format(project.worked_hours, project.worked_minutes) }}
-                                </td> 
+                                </td>
+                                <td class="align-middle">{{ project.to_do_list }}</td>
+                                {% for user in users %}
+                                    {% if user.id == project.assigned_user_id %}
+                                        <td class="align-middle">{{ user.name ~ ' ' ~ user.last_name }}</td>
+                                    {% endif %}
+                                {% endfor %}
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -74,4 +67,4 @@
             </div>
         </div>
     </div>
-{% endblock content_table_projects_user %}
+{% endblock content_table_assigned_projects %}

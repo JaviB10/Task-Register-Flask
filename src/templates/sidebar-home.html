@@ -1,0 +1,22 @@
+{% block sidebar_home %}
+    <li>
+        <a href="#" id="add-project-admin" onclick="openFormNewProject('{{ user.id }}')">
+            <img src="{{ url_for('static', filename='img/project-add-icon.svg') }}" alt="">
+            <span>New Project</span>
+        </a>
+    </li>
+    {% if user.role == 'admin' %}
+        <li>
+            <a href="/users">
+                <img src="{{ url_for('static', filename='img/list-users-icon.svg') }}" alt="">
+                <span>List Users</span>
+            </a>
+        </li>
+        <li>
+            <a href="/assigned_projects/1">
+                <img src="{{ url_for('static', filename='img/user-assigned-icon.svg') }}" alt="">
+                <span>Assigned projects</span>
+            </a>
+        </li>
+    {% endif %}
+{% endblock sidebar_home %}
