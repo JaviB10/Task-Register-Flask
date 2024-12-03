@@ -26,8 +26,9 @@ def create_project():
 
         # Recibir lista de IDs de colaboradores
         collaborators = request.form.getlist('collaborators')
+        assigned_project = request.form.get('is_part_of_project') == "on"
 
-        response = project_service.create_project(user_id, project_name, comments, worked_hours, worked_minutes, to_do_list, collaborators)
+        response = project_service.create_project(user_id, project_name, comments, worked_hours, worked_minutes, to_do_list, assigned_project, collaborators)
 
         return jsonify({'status': response["status"], 'message': response["message"]}), response["status"]
 
@@ -55,11 +56,13 @@ def update_project():
         worked_hours = request.form['worked_hours']
         worked_minutes = request.form['worked_minutes']
         status = int(request.form['status_project'])
+        role_user = int(request.form['role_user'])
 
         # Recibir lista de IDs de colaboradores
         collaborators = request.form.getlist('collaborators')
+        assigned_project = request.form.get('defaultCheck2') == "on"
         
-        response = project_service.update_project(project_id, project_name, comments, to_do_list, worked_hours, worked_minutes, status, collaborators)
+        response = project_service.update_project(project_id, project_name, comments, to_do_list, worked_hours, worked_minutes, status, role_user, assigned_project, collaborators)
 
         return jsonify({'status': response["status"], 'message': response["message"]}), response["status"]
         

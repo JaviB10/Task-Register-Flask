@@ -15,7 +15,7 @@
                     <tbody>
                         <tr>
                             {% for user in users %}
-                                {% if user.role != 'admin' %}
+                                {% if user.role != 0 %}
                                     <tr>
                                         <td>
                                             <a href="#" class="text-primary fw-bold text-decoration-none" data-menu="{{ user.id }}" onclick="toggleMenu(event, '{{ user.id }}')">

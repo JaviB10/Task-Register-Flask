@@ -26,19 +26,18 @@ def create_user():
 
     return jsonify({'status': response["status"], 'message': response["message"]}), response["status"]
 
-@user_bp.route('/update_user', methods=['GET', 'POST'])
-def update_user():
+@user_bp.route('/update_user/<int:user_id>', methods=['GET', 'POST'])
+def update_user(user_id):
     db = get_db_connection()
 
     user_service = UserService(db)
 
     if request.method == 'POST':
-        user_id = request.form.get('user_id')
         name = request.form['first_name']
         last_name = request.form['last_name']
         position = request.form['position_user']
         email = request.form['email_user']
-        
+    
         response = user_service.update_user(user_id, name, last_name, position, email)
 
         return jsonify({'status': response["status"], 'message': response["message"]}), response["status"]

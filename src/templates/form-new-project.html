@@ -31,15 +31,17 @@
                     <select class="form-control custom-input selectpicker" id="collaborators" name="collaborators" multiple data-live-search="true">
                         {% for u in users %}
                             {% if u.id != user.id %}
-                                <option value="{{ u.id }}">{{ u.name }}</option>
+                                <option value="{{ u.id }}">{{ u.name ~ ' ' ~ u.last_name }}</option>
                             {% endif %}
                         {% endfor %}
                     </select>
                 </div>
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked">
-                    <label class="form-check-label" for="flexSwitchCheckChecked">You will be part of the project</label>
-                </div>
+                {% if user.role == 0 %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="on" id="defaultCheck1" name="is_part_of_project" checked>
+                        <label class="form-check-label" for="defaultCheck1">Mark if you are part of the project</label>
+                    </div>
+                {% endif %}
                 <div class="d-flex justify-content-end flex-wrap gap-2">
                     <button type="button" id="close-form" class="btn btn-danger me-2" onclick="closeFormNewProject()">Close</button>
                     <button type="submit" id="create-project" class="btn btn-success">Create</button>

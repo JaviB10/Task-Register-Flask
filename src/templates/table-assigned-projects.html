@@ -14,7 +14,6 @@
                             <th scope="col" class="text-center align-middle">Collaborators</th>
                             <th scope="col" class="text-center align-middle">Worked hours</th>
                             <th scope="col" class="text-center align-middle">To do list</th>
-                            <th scope="col" class="text-center align-middle">Assigned user</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -28,7 +27,7 @@
                                     </a>
                                     
                                     <div class="menu-admin position-absolute mt-2 py-2 border border-light bg-black text-light hidden-menu-admin d-flex" style="width: auto;" data-menu="{{ project.id }}">
-                                        <img src="{{ url_for('static', filename='img/update-icon.svg') }}" alt="update" title="Update project" class="cursor-pointer ms-2" onclick="openFormUpdateProject('{{ project.id }}', '{{ project.project_name}}', '{{ project.comments}}', '{{ project.worked_hours}}', '{{ project.worked_minutes}}', '{{ project.to_do_list}}', '{{ project.status}}')">
+                                        <img src="{{ url_for('static', filename='img/update-icon.svg') }}" alt="update" title="Update project" class="cursor-pointer ms-2" onclick="openFormUpdateProject('{{ project.id }}', '{{ project.project_name}}', '{{ project.comments}}', '{{ project.worked_hours}}', '{{ project.worked_minutes}}', '{{ project.to_do_list}}', '{{ project.status}}', '{{ project.assigned_id}}', '{{ project.collaborators | join(',') }}', '{{ user.role }}')">
                                         <img src="{{ url_for('static', filename='img/delete-icon.svg') }}" alt="delete" title="Delete project"  class="cursor-pointer mx-2" onclick="openFormDeleteProject('{{ project[0] }}')">
                                     </div>
                                 
@@ -50,16 +49,11 @@
                                         Unknown
                                     {% endif %}
                                 </td>
-                                <td class="text-center align-middle">{{ project.collaborators }}</td>
+                                <td class="text-center align-middle">{{ project.collaborators | length }}</td>
                                 <td class="text-center align-middle">
                                     {{ '%d:%02dhs' | format(project.worked_hours, project.worked_minutes) }}
                                 </td>
                                 <td class="align-middle">{{ project.to_do_list }}</td>
-                                {% for user in users %}
-                                    {% if user.id == project.assigned_user_id %}
-                                        <td class="align-middle">{{ user.name ~ ' ' ~ user.last_name }}</td>
-                                    {% endif %}
-                                {% endfor %}
                             </tr>
                         {% endfor %}
                     </tbody>

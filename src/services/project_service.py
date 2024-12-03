@@ -34,10 +34,50 @@ class ProjectService:
     
     def get_assigned_projects_by_user(self, user_id):
         cursor = self.db.cursor()
-        cursor.execute('SELECT * FROM projects WHERE creator_id = ? AND assigned_user_id IS NOT NULL', (user_id,))
-        return cursor.fetchall()
+        cursor.execute('SELECT * FROM projects WHERE creator_id = ? AND assigned_id != 0', (user_id,))
+        projects = [dict(row) for row in cursor.fetchall()]
+
+        # Obtener los IDs de los proyectos donde el usuario es colaborador
+        cursor.execute('''
+            SELECT project_id 
+            FROM project_collaborators 
+            WHERE collaborator_id = ?
+        ''', (user_id,))
+        collaborator_rows = cursor.fetchall()
+        project_collaborator_ids = [row["project_id"] for row in collaborator_rows]
+
+        # Si el usuario tiene colaboraciones, buscar los proyectos completos
+        projects_collaborator = []
+        if project_collaborator_ids:
+            cursor.execute('SELECT * FROM projects WHERE id IN ({})'.format(
+                ','.join('?' * len(project_collaborator_ids))
+            ), project_collaborator_ids)
+            projects_collaborator = [dict(row) for row in cursor.fetchall()]
+
+        # Unificar ambas listas sin duplicados
+        all_projects = list({project["id"]: project for project in (projects + projects_collaborator)}.values())
+
+        # Obtener todos los colaboradores de proyectos
+        cursor.execute('SELECT * FROM project_collaborators')
+        projects_collaborators = cursor.fetchall()
+
+        # Mapear colaboradores a proyectos
+        project_collaborators_map = {}
+        for collaborator in projects_collaborators:
+            project_id = collaborator["project_id"]
+            collaborator_id = collaborator["collaborator_id"]
+            if project_id not in project_collaborators_map:
+                project_collaborators_map[project_id] = []
+            project_collaborators_map[project_id].append(collaborator_id)
+
+        # Enriquecer los proyectos con los colaboradores
+        for project in all_projects:
+            project_id = project["id"]
+            project["collaborators"] = project_collaborators_map.get(project_id, [])
+
+        return all_projects
     
-    def create_project(self, user_id, project_name, comments, worked_hours, worked_minutes, to_do_list, collaborators):
+    def create_project(self, user_id, project_name, comments, worked_hours, worked_minutes, to_do_list, assigned_project, collaborators):
         cursor = self.db.cursor()
         
         creator_id = user_id
@@ -50,10 +90,19 @@ class ProjectService:
         
         if worked_minutes == "":
             worked_minutes = 0
+        
+        cursor.execute('SELECT * FROM users WHERE id = ?', (user_id,))
+        user = cursor.fetchone()
+
+        if user['role'] != 1:
+            if assigned_project is False:
+                    assigned_project = collaborators[0] if collaborators else None
+            else:
+                assigned_project = 0
 
         cursor.execute('''
-            INSERT INTO projects (project_name, comments, start, finish, status, worked_hours, worked_minutes, to_do_list, creator_id)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''', (project_name, comments, start, finish, status, worked_hours, worked_minutes, to_do_list, creator_id))
+            INSERT INTO projects (project_name, comments, start, finish, status, worked_hours, worked_minutes, to_do_list, creator_id, assigned_id)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', (project_name, comments, start, finish, status, worked_hours, worked_minutes, to_do_list, creator_id, assigned_project))
         
         project_id = cursor.lastrowid  # Obtener el ID del proyecto recién creado
 
@@ -89,7 +138,7 @@ class ProjectService:
 
         return {"status": 200, "message": "Project deleted successfully."}
     
-    def update_project(self, project_id, project_name, comments, to_do_list, worked_hours, worked_minutes, status, collaborators):
+    def update_project(self, project_id, project_name, comments, to_do_list, worked_hours, worked_minutes, status, role_user, assigned_project, collaborators):
         try:
             cursor = self.db.cursor()
 
@@ -110,35 +159,42 @@ class ProjectService:
             if worked_minutes == "":
                 worked_minutes = 0
             
+            print(assigned_project)
+
+            if role_user != 1:
+                if assigned_project is False:
+                    assigned_project = collaborators[0] if collaborators else None
+                else:
+                    assigned_project = 0
+
             cursor.execute('''
                 UPDATE projects 
-                SET project_name = ?, comments = ?, to_do_list = ?, worked_hours = ?, worked_minutes = ?, status = ?, finish = ?
+                SET project_name = ?, comments = ?, to_do_list = ?, worked_hours = ?, worked_minutes = ?, status = ?, finish = ?, assigned_id = ?
                 WHERE id = ?
-            ''', (project_name, comments, to_do_list, worked_hours, worked_minutes, status, finish, project_id))
+            ''', (project_name, comments, to_do_list, worked_hours, worked_minutes, status, finish, assigned_project, project_id))
 
             creator_id = project["creator_id"]
-            print(creator_id)
-            if collaborators:
-                collaborators = [int(collaborator) for collaborator in collaborators]
-                print(collaborators)
-                if creator_id in collaborators:
-                    return {"status": 400, "message": "The creator of the project cannot be a collaborator."}
+          
+            collaborators = [int(collaborator) for collaborator in collaborators]
 
-                cursor.execute('DELETE FROM project_collaborators WHERE project_id = ?', (project_id,))
-                
-                for collaborator_id in collaborators:
-                    cursor.execute('''
-                        INSERT INTO project_collaborators (project_id, collaborator_id)
-                        VALUES (?, ?)
-                    ''', (project_id, collaborator_id))
+            if creator_id in collaborators:
+                return {"status": 400, "message": "The creator of the project cannot be a collaborator."}
+
+            cursor.execute('DELETE FROM project_collaborators WHERE project_id = ?', (project_id,))
+            
+            for collaborator_id in collaborators:
+                cursor.execute('''
+                    INSERT INTO project_collaborators (project_id, collaborator_id)
+                    VALUES (?, ?)
+                ''', (project_id, collaborator_id))
             
             self.db.commit()
 
             return {"status": 200, "message": "Project updated successfully."}
             
         except Exception as e:
-            print(f"Error al actualizar el proyecto: {e}")
-            return False
+            self.db.rollback()  # Revertir cambios en caso de error
+            return {"status": 500, "message": f"An error occurred: {str(e)}"}
         
     def update_assigned_project(self, project_id, user_id):
         try:

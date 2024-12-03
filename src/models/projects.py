@@ -1,5 +1,5 @@
 class Project:
-    def __init__(self, id, project_name, comments, start, finish, status, worked_hours, worked_minutes, to_do_list, creator_id):
+    def __init__(self, id, project_name, comments, start, finish, status, worked_hours, worked_minutes, to_do_list, creator_id, assigned_id):
         self.id = id
         self.project_name = project_name
         self.comments = comments
@@ -10,6 +10,7 @@ class Project:
         self.worked_minutes = worked_minutes
         self.to_do_list = to_do_list
         self.creator_id = creator_id
+        self.assigned_id = assigned_id
 
     @staticmethod
     def create_table(cursor):
@@ -25,6 +26,7 @@ class Project:
                 worked_minutes INTEGER DEFAULT 0,
                 to_do_list TEXT,
                 creator_id INTEGER NOT NULL,
+                assigned_id INTEGER DEFAULT NULL,
                 FOREIGN KEY(creator_id) REFERENCES users(id) ON DELETE CASCADE
             )
     ''')

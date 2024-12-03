@@ -28,7 +28,7 @@ class UserService:
         if user:
             return {"status": 400, "message": "The email has already been taken."}
 
-        role = "user"
+        role = 1
 
         cursor.execute('''
             INSERT INTO users (name, last_name, position, email, role)
@@ -41,7 +41,7 @@ class UserService:
     
     def update_user(self, user_id, name, last_name, position, email):
         cursor = self.db.cursor()
-
+        print(user_id)
         cursor.execute('SELECT * FROM users WHERE id = ?', (user_id,))
         user = cursor.fetchone()
 

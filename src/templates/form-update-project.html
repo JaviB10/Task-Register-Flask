@@ -3,6 +3,7 @@
         <div class="bg-black p-4 rounded shadow-lg w-100" style="max-width: 500px; position: relative;">
             <form action="{{ url_for('projects.update_project') }}" method="POST">
                 <input type="hidden" id="project_id" name="project_id">
+                <input type="hidden" id="role_user" name="role_user">
                 <h4 class="text-center text-light fw-semibold mb-4">UPDATE PROJECT</h4>
                 <div>
                     <label for="project_name" class="my-1 text-light fst-normal">Project name</label>
@@ -30,10 +31,16 @@
                     <label for="collaborators" class="my-1 text-light fst-normal">Collaborators</label>
                     <select class="form-control custom-input selectpicker" id="collaborators-select" name="collaborators" multiple data-live-search="true">
                         {% for user in users %}
-                            <option value="{{ user.id }}">{{ user.name }}</option> 
+                            <option value="{{ user.id }}">{{ user.name ~ ' ' ~ user.last_name }}</option> 
                         {% endfor %}
                     </select>
                 </div>
+                {% if user.role == 0 or page == 'projects_user' %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="on" id="defaultCheck2" name="defaultCheck2">
+                        <label class="form-check-label" for="defaultCheck2">Mark if you are part of the project</label>
+                    </div>
+                {% endif %}
                 <div class="mb-3">
                     <label for="status_project" class="my-1 text-light fst-normal">Project finished?</label>
                     <select id="status_project" name="status_project" class="form-select custom-input">

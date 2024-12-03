@@ -107,13 +107,14 @@ def assigned_projects(user_id):
 
     project_service = ProjectService(db)
     projects = project_service.get_assigned_projects_by_user(user_id)
-
     user_service = UserService(db)
     users = user_service.get_all_users()
+    user = user_service.get_user_by_id(user_id)
 
     db.close()
 
-    return render_template('home.html', page='assigned_projects', projects=projects, users=users)
+    return render_template('home.html', page='assigned_projects', projects=projects, users=users, user=user)
+
 
 if __name__ == "__main__":
     initialize_database()

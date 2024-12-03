@@ -82,6 +82,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
 const openFormUpdateUser = (userID, name, last_name, position, email) => {  
 
+    const form = document.getElementById('form-update-user');
+    
+    const action = `/users/update_user/${userID}`;
+    form.action = action;
+
     formUpdateUser.classList.remove('hidden-form-update');
 
     const menu = document.querySelector(`.menu-admin[data-menu="${userID}"]`);
@@ -90,18 +95,16 @@ const openFormUpdateUser = (userID, name, last_name, position, email) => {
     }
 
     const userData = {
-        id: userID,
         name: name,
         last_name: last_name,
         position: position,
         email: email
     }
-
+    
     document.querySelector('#first_name').value = userData.name
     document.querySelector('#last_name').value = userData.last_name
     document.querySelector('#position_user').value = userData.position
     document.querySelector('#email_user').value = userData.email
-    document.querySelector('#user_id').value = userData.id
 } 
 
 const closeFormUpdateUser = () => {
@@ -115,7 +118,7 @@ document.addEventListener("DOMContentLoaded", function () {
         e.preventDefault(); // Evita el comportamiento por defecto del formulario
 
         const formData = new FormData(form); // Captura los datos del formulario
-
+        
         try {
             const response = await fetch(form.action, {
                 method: form.method,
@@ -142,11 +145,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 const openFormDeleteUser = (user_id) => {
-    
-    const form = document.getElementById('form-delete-user');
-    
-    const action = `/users/delete_user/${user_id}`;
-    form.action = action;
 
     formDeleteUser.classList.remove('hidden-delete');
 

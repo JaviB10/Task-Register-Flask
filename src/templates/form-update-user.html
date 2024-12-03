@@ -1,8 +1,7 @@
 {% block content_form_update_user %}
     <div class="position-fixed top-0 start-0 end-0 bottom-0 bg-light bg-opacity-50 d-flex justify-content-center align-items-center z-index-1050 hidden-form-update" id="hidden-form-update-user">
         <div class="bg-black p-4 rounded shadow-lg w-100" style="max-width: 32rem; position: relative;">
-            <form action="{{ url_for('users.update_user') }}" method="POST">
-                <input type="hidden" id="user_id" name="user_id">
+            <form id="form-update-user" action="" method="POST">
                 <h4 class="text-center text-light fw-semibold mb-4">UPDATE USER</h4>
                 <div>
                     <label for="first_name" class="my-1 text-light fst-normal">First name</label>

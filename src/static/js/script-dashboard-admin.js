@@ -81,7 +81,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-const openFormUpdateProject = (project_id, project_name, comments, worked_hours, worked_minutes, to_do_list, status, collaborators) => {  
+const openFormUpdateProject = (project_id, project_name, comments, worked_hours, worked_minutes, to_do_list, status, assigned_id, collaborators, role) => {  
     
     formUpdateProject.classList.remove('hidden-form-update');
     
@@ -100,10 +100,7 @@ const openFormUpdateProject = (project_id, project_name, comments, worked_hours,
         status: status
     };
     
-    console.log(collaborators);
     const collaboratorIds = collaborators.split(','); // Convertir a array
-    console.log(collaboratorIds);
-    
 
     document.querySelector('#project_id').value = projectData.id;
     document.querySelector('#project_name_update').value = projectData.project_name;
@@ -112,12 +109,23 @@ const openFormUpdateProject = (project_id, project_name, comments, worked_hours,
     document.querySelector('#worked_minutes_update').value = projectData.worked_minutes;
     document.querySelector('#to_do_list').value = projectData.to_do_list;
     document.querySelector('#status_project').value = projectData.status;
+    document.querySelector('#role_user').value = role
+
+    const checkbox = document.querySelector('#defaultCheck2'); // Cambiar el id al nuevo
+    console.log(assigned_id);
+    
+    if (role == 0) {
+        // Lógica para marcar/desmarcar el checkbox basado en assigned_id
+        if (assigned_id === null || assigned_id === undefined || isNaN(assigned_id) || assigned_id == 0) {
+            checkbox.checked = true; // Desmarcar el checkbox
+        } else {
+            checkbox.checked = false; // Marcar el checkbox
+        }
+    }
 
     const select = document.getElementById('collaborators-select');
     Array.from(select.options).forEach(option => {
-        console.log('Checking option value:', option.value); // Verifica el valor de cada opción
         option.selected = collaboratorIds.includes(option.value);
-        console.log('Is selected:', option.selected); // Verifica si está seleccionado
     });
 
     $('#collaborators-select').selectpicker('refresh');
