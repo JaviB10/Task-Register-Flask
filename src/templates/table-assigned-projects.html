@@ -27,8 +27,8 @@
                                     </a>
                                     
                                     <div class="menu-admin position-absolute mt-2 py-2 border border-light bg-black text-light hidden-menu-admin d-flex" style="width: auto;" data-menu="{{ project.id }}">
-                                        <img src="{{ url_for('static', filename='img/update-icon.svg') }}" alt="update" title="Update project" class="cursor-pointer ms-2" onclick="openFormUpdateProject('{{ project.id }}', '{{ project.project_name}}', '{{ project.comments}}', '{{ project.worked_hours}}', '{{ project.worked_minutes}}', '{{ project.to_do_list}}', '{{ project.status}}', '{{ project.assigned_id}}', '{{ project.collaborators | join(',') }}', '{{ user.role }}')">
-                                        <img src="{{ url_for('static', filename='img/delete-icon.svg') }}" alt="delete" title="Delete project"  class="cursor-pointer mx-2" onclick="openFormDeleteProject('{{ project[0] }}')">
+                                        <img src="{{ url_for('static', filename='img/update-icon.svg') }}" alt="update" title="Update project" class="cursor-pointer ms-2" onclick="openFormUpdateProject('{{ project.id }}', '{{ project.project_name}}', '{{ project.comments}}', '{{ project.worked_hours}}', '{{ project.worked_minutes}}', '{{ project.to_do_list}}', '{{ project.status}}', '{{ project.assigned_id}}', '{{ project.collaborators | join(',') }}', '{{ user.id }}', '{{ user.role }}')">
+                                        <img src="{{ url_for('static', filename='img/delete-icon.svg') }}" alt="delete" title="Delete project"  class="cursor-pointer mx-2" onclick="openFormDeleteProject('{{ project.id }}', '{{ user.id }}')">
                                     </div>
                                 
                                 </td>

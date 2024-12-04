@@ -1,9 +1,9 @@
 {% block content_form_update_project %}
     <div class="position-fixed top-0 start-0 end-0 bottom-0 bg-light bg-opacity-50 d-flex justify-content-center align-items-center z-index-1050 hidden-form-update" id="hidden-form-update-admin">
         <div class="bg-black p-4 rounded shadow-lg w-100" style="max-width: 500px; position: relative;">
-            <form action="{{ url_for('projects.update_project') }}" method="POST">
-                <input type="hidden" id="project_id" name="project_id">
-                <input type="hidden" id="role_user" name="role_user">
+            <form id="form-update-project" action="" method="POST">
+                <input type="hidden" id="userID" name="userID">
+                <input type="hidden" id="role_user_update" name="role_user_update">
                 <h4 class="text-center text-light fw-semibold mb-4">UPDATE PROJECT</h4>
                 <div>
                     <label for="project_name" class="my-1 text-light fst-normal">Project name</label>

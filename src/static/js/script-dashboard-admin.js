@@ -2,10 +2,9 @@
 const formNewProject = document.getElementById('hidden-form-admin');
 const formUpdateProject = document.getElementById('hidden-form-update-admin');
 const formDeleteProject = document.getElementById('hidden-delete-admin');
-const formAssignedProject = document.getElementById('hidden-form-assigned-admin');
 const detailProject = document.getElementById('hidden-detail-proyect');
 
-const showToast = (icon, title, timer = 1500) => {
+const showToast = (icon, title, timer = 2000) => {
     const Toast = Swal.mixin({
         toast: true,
         position: "top-end",
@@ -72,6 +71,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (res.status == 200) {
                 showToast("success", "Project created successfully");
+            } else if (res.status == 400) {
+                showToast("error", "The project must have at least one collaborator or include you as a participant");
             } else {
                 showToast("error", "Internal Server Error");
             }
@@ -81,7 +82,12 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-const openFormUpdateProject = (project_id, project_name, comments, worked_hours, worked_minutes, to_do_list, status, assigned_id, collaborators, role) => {  
+const openFormUpdateProject = (project_id, project_name, comments, worked_hours, worked_minutes, to_do_list, status, assigned_id, collaborators, user_id, role) => {  
+    
+    const form = document.getElementById('form-update-project');
+    
+    const action = `/projects/update_project/${project_id}`;
+    form.action = action;
     
     formUpdateProject.classList.remove('hidden-form-update');
     
@@ -91,39 +97,40 @@ const openFormUpdateProject = (project_id, project_name, comments, worked_hours,
     }
     
     const projectData = {
-        id: project_id,
+        project_id: project_id,
         project_name: project_name,
         comments: comments,
         worked_hours: worked_hours,
         worked_minutes: worked_minutes,
         to_do_list: to_do_list,
         status: status
-    };
+    }
+    console.log(role);
     
-    const collaboratorIds = collaborators.split(','); // Convertir a array
-
-    document.querySelector('#project_id').value = projectData.id;
     document.querySelector('#project_name_update').value = projectData.project_name;
     document.querySelector('#comments_project').value = projectData.comments;
     document.querySelector('#worked_hours_update').value = projectData.worked_hours;
     document.querySelector('#worked_minutes_update').value = projectData.worked_minutes;
     document.querySelector('#to_do_list').value = projectData.to_do_list;
     document.querySelector('#status_project').value = projectData.status;
-    document.querySelector('#role_user').value = role
-
+    
+    document.querySelector('#userID').value = user_id;
+    document.querySelector('#role_user_update').value = role
+    
     const checkbox = document.querySelector('#defaultCheck2'); // Cambiar el id al nuevo
-    console.log(assigned_id);
     
     if (role == 0) {
         // Lógica para marcar/desmarcar el checkbox basado en assigned_id
-        if (assigned_id === null || assigned_id === undefined || isNaN(assigned_id) || assigned_id == 0) {
+        if (assigned_id === null || assigned_id === undefined || isNaN(assigned_id) || assigned_id == user_id) {
             checkbox.checked = true; // Desmarcar el checkbox
         } else {
             checkbox.checked = false; // Marcar el checkbox
         }
     }
-
+    
     const select = document.getElementById('collaborators-select');
+    const collaboratorIds = collaborators.split(','); // Convertir a array
+    
     Array.from(select.options).forEach(option => {
         option.selected = collaboratorIds.includes(option.value);
     });
@@ -157,8 +164,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 showToast("success", "Project updated successfully");
             } else if (res.status == 404) {
                 showToast("error", "Project not found");
-            } else if (res.status == 400) {
+            } else if (res.status == 400 && res.message === "The creator of the project cannot be a collaborator.") {
                 showToast("error", "The creator of the project cannot be a collaborator");
+            } else if (res.status == 400 && res.message === "You are not the creator of the project, so you cannot assign yourself to it. If you wish to participate, you must do so as a collaborator.") {
+                showToast("error", "You are not the creator of the project, so you cannot assign yourself to it. If you wish to participate, you must do so as a collaborator");
             } else {
                 showToast("error", "Internal Server Error");
             }
@@ -168,9 +177,9 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-const openFormDeleteProject = (project_id) => {
+const openFormDeleteProject = (project_id, user_id) => {
     
-    const form = document.getElementById('form-delete');
+    const form = document.getElementById('form-delete-project');
     
     const action = `/projects/delete_project/${project_id}`;
     form.action = action;
@@ -181,6 +190,9 @@ const openFormDeleteProject = (project_id) => {
     if (menu) {
         menu.classList.add('hidden-menu-admin')
     }
+    console.log(user_id);
+    
+    document.querySelector('#user_id_delete').value = user_id;
 }
 
 const closeFormDeleteProject = () => {
@@ -188,14 +200,17 @@ const closeFormDeleteProject = () => {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-    const deleteForm = document.getElementById("form-delete");
+    const deleteForm = document.getElementById("form-delete-project");
 
     deleteForm.addEventListener("submit", async function (e) {
         e.preventDefault(); // Prevenir el envío estándar del formulario
 
+        const formData = new FormData(deleteForm);
+
         try {
             const response = await fetch(deleteForm.action, {
                 method: 'POST',
+                body: formData,
             });
 
             const res = await response.json();
@@ -211,56 +226,6 @@ document.addEventListener("DOMContentLoaded", function () {
             } else {
                 showToast("error", "Internal Server Error");
             }
-        } catch (error) {
-            console.log(error);
-        }
-    });
-});
-
-const openFormAssignedProject = (project_id) => {
-    const form = document.getElementById('form-assigned-project');
-    
-    const action = `/projects/update_assigned_project/${project_id}`;
-    form.action = action;
-
-    formAssignedProject.classList.remove('hidden-form-assigned');
-    
-    const menu = document.querySelector(`.menu-admin[data-menu="${project_id}"]`);
-    if (menu) {
-        menu.classList.add('hidden-menu-admin');
-    }
-}
-
-const closeFormAssignedProject = () => {
-    formAssignedProject.classList.toggle('hidden-form-assigned');
-}
-
-document.addEventListener("DOMContentLoaded", function () {
-    const form = document.querySelector("#hidden-form-assigned-admin form")
-
-    form.addEventListener("submit", async function (e) {
-        e.preventDefault();
-
-        const formData = new FormData(form);
-
-        try {
-            const response = await fetch(form.action, {
-                method: form.method,
-                body: formData,
-            });
-
-            const res = await response.json();
-
-            closeFormAssignedProject()
-
-            if (res.status == 200) {
-                showToast("success", "Project assigned successfully");
-            } else if (res.status == 404) {
-                showToast("error", "Project or User not found");
-            } else {
-                showToast("error", "Internal Server Error");
-            }
-
         } catch (error) {
             console.log(error);
         }

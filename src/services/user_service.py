@@ -28,7 +28,7 @@ class UserService:
         if user:
             return {"status": 400, "message": "The email has already been taken."}
 
-        role = 1
+        role = 0
 
         cursor.execute('''
             INSERT INTO users (name, last_name, position, email, role)

@@ -26,30 +26,14 @@ def home():
 
     project_service = ProjectService(db)
     user_service = UserService(db)
-    projects_collaborators_service = ProjectCollaboratorsService(db)
 
-    users = user_service.get_all_users()
+    # Obtener información del usuario
     user = user_service.get_user_by_email(email)
+    users = user_service.get_all_users()
 
-    projects = [dict(row) for row in project_service.get_projects_by_user(user['id'])]
-
-    collaborator_rows = projects_collaborators_service.get_projects_collaborators_by_user(user['id'])
-    project_collaborator_id = [row["project_id"] for row in collaborator_rows]
-
-    # Si el usuario tiene colaboraciones, buscar los proyectos completos
-    projects_collaborator = []
-    if project_collaborator_id:
-        projects_collaborator = [dict(row) for row in project_service.get_projects_by_id(project_collaborator_id)]
-
-    # Unificar ambas listas sin duplicados
-    all_projects = list({project["id"]: project for project in (projects + projects_collaborator)}.values())
-
-    # Obtener todos los colaboradores de proyectos
-    projects_collaborators = projects_collaborators_service.get_all_projects_collaborators()
-
-    # Enriquecer proyectos con colaboradores
-    all_projects = projects_collaborators_service.map_project_collaborators(all_projects, projects_collaborators)
-    
+    # Obtener proyectos del usuario
+    all_projects = project_service.get_user_projects(user['id'], user['role'])
+    print(all_projects)
     db.close()
 
     return render_template('home.html', page='home', all_projects=all_projects, users=users, user=user)
@@ -57,10 +41,14 @@ def home():
 @app.route('/users')
 def list_users():
     db = get_db_connection()
-    email = "admin@example.com"
+
+    email = "admin2@example.com"
+
     user_service = UserService(db)
+
     users = user_service.get_all_users()
     user = user_service.get_user_by_email(email)
+
     db.close()
 
     return render_template('home.html', page='users', users=users, user=user)
@@ -69,7 +57,7 @@ def list_users():
 def list_projects_user(user_id):
     db = get_db_connection()
     
-    email = "admin@example.com"
+    email = "admin2@example.com"
     user_service = UserService(db)
     user = user_service.get_user_by_email(email)
 
@@ -106,8 +94,10 @@ def assigned_projects(user_id):
     db = get_db_connection()
 
     project_service = ProjectService(db)
-    projects = project_service.get_assigned_projects_by_user(user_id)
     user_service = UserService(db)
+
+    projects = project_service.get_assigned_projects_by_user(user_id)
+    
     users = user_service.get_all_users()
     user = user_service.get_user_by_id(user_id)
 
