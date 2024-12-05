@@ -1,14 +1,9 @@
-from flask import Blueprint, request, jsonify, render_template, redirect, url_for
+from flask import Blueprint, request, jsonify
+from ..database import get_db_connection
+from .auth_routes import token_required
 from ..services.project_service import ProjectService
-from sqlite3 import connect
-import sqlite3
 
 project_bp = Blueprint('projects', __name__)
-
-def get_db_connection():
-    conn = connect('database.db')
-    conn.row_factory = sqlite3.Row
-    return conn
 
 @project_bp.route('/create_project', methods=['GET', 'POST'])
 def create_project():

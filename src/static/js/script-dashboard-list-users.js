@@ -80,7 +80,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-const openFormUpdateUser = (userID, name, last_name, position, email) => {  
+const openFormUpdateUser = (userID, name, last_name, position, email, role) => {  
 
     const form = document.getElementById('form-update-user');
     
@@ -98,13 +98,15 @@ const openFormUpdateUser = (userID, name, last_name, position, email) => {
         name: name,
         last_name: last_name,
         position: position,
-        email: email
+        email: email,
+        role: role
     }
     
     document.querySelector('#first_name').value = userData.name
     document.querySelector('#last_name').value = userData.last_name
     document.querySelector('#position_user').value = userData.position
     document.querySelector('#email_user').value = userData.email
+    document.querySelector('#roleUser').value = userData.role
 } 
 
 const closeFormUpdateUser = () => {
@@ -145,6 +147,11 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 const openFormDeleteUser = (user_id) => {
+
+    const form = document.getElementById('form-delete-user');
+    
+    const action = `/users/delete_user/${user_id}`;
+    form.action = action;
 
     formDeleteUser.classList.remove('hidden-delete');
 

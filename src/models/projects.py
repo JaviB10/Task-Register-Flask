@@ -15,7 +15,7 @@ class Project:
     @staticmethod
     def create_table(cursor):
         cursor.execute('''
-        CREATE TABLE IF NOT EXISTS projects (
+            CREATE TABLE IF NOT EXISTS projects (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 project_name TEXT NOT NULL,
                 comments TEXT,
@@ -29,4 +29,4 @@ class Project:
                 assigned_id INTEGER DEFAULT NULL,
                 FOREIGN KEY(creator_id) REFERENCES users(id) ON DELETE CASCADE
             )
-    ''')
+        ''')

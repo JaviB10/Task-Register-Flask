@@ -18,7 +18,7 @@ class RecycleProjects:
     @staticmethod
     def create_table(cursor):
         cursor.execute('''
-        CREATE TABLE IF NOT EXISTS recycle_projects (
+            CREATE TABLE IF NOT EXISTS recycle_projects (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,      
                 original_project_id INTEGER NOT NULL,
                 project_name TEXT NOT NULL,                 
@@ -36,4 +36,4 @@ class RecycleProjects:
                 FOREIGN KEY(creator_id) REFERENCES users(id),
                 FOREIGN KEY(deleted_by) REFERENCES users(id)
             )
-    ''')
+        ''')

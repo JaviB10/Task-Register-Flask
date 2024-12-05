@@ -1,17 +1,13 @@
-from flask import Blueprint, request, jsonify, render_template, redirect, url_for
+from flask import Blueprint, request, jsonify
+from ..database import get_db_connection
+from .auth_routes import token_required
 from ..services.user_service import UserService
-from sqlite3 import connect
-import sqlite3
 
 user_bp = Blueprint('users', __name__)
 
-def get_db_connection():
-    conn = connect('database.db')
-    conn.row_factory = sqlite3.Row
-    return conn
-
 @user_bp.route('/create_user', methods=['GET', 'POST'])
 def create_user():
+
     db = get_db_connection()
 
     user_service = UserService(db)
@@ -21,8 +17,9 @@ def create_user():
         last_name = request.form.get('last_name')
         position = request.form.get('position')
         email = request.form.get('email')
+        role = int(request.form['role_user'])
 
-    response = user_service.create_user(name, last_name, position, email)
+    response = user_service.create_user(name, last_name, position, email, role)
 
     return jsonify({'status': response["status"], 'message': response["message"]}), response["status"]
 
@@ -37,8 +34,9 @@ def update_user(user_id):
         last_name = request.form['last_name']
         position = request.form['position_user']
         email = request.form['email_user']
+        role = int(request.form['roleUser'])
     
-        response = user_service.update_user(user_id, name, last_name, position, email)
+        response = user_service.update_user(user_id, name, last_name, position, email, role)
 
         return jsonify({'status': response["status"], 'message': response["message"]}), response["status"]
 

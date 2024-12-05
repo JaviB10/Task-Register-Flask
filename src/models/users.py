@@ -11,13 +11,13 @@ class User:
     @staticmethod
     def create_table(cursor):
         cursor.execute('''
-        CREATE TABLE IF NOT EXISTS users (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    name TEXT NOT NULL,
-                    last_name TEXT NOT NULL,
-                    position TEXT NOT NULL,
-                    email TEXT NOT NULL UNIQUE,
-                    role BOOLEAN DEFAULT 1,  -- 1 means user, 0 means admin,
-                    profile_picture TEXT
-        )
-    ''')
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                last_name TEXT NOT NULL,
+                position TEXT NOT NULL,
+                email TEXT NOT NULL UNIQUE,
+                role BOOLEAN DEFAULT 1,  -- 1 means user, 0 means admin,
+                profile_picture TEXT
+            )
+        ''')

@@ -1,0 +1,40 @@
+<div class="container">
+    <h2 class="mt-5">Iniciar sesión</h2>
+    <form id="login-form">
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Login</button>
+    </form>
+</div>
+
+<script>
+    document.getElementById('login-form').addEventListener('submit', function(e) {
+        e.preventDefault(); // Evitar que se recargue la página al enviar el formulario
+        
+        const email = document.getElementById('email').value;
+
+        fetch('/auth/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email: email }) // Enviar el correo como JSON
+        })
+        .then(response => response.json()) // Obtener la respuesta en formato JSON
+        .then(data => {
+            if (data.message === 'Logged in successfully!') {
+                // Redirigir a la página de inicio si la respuesta es exitosa
+                window.location.href = '/';
+            } else {
+                // Mostrar mensaje de error si no se ha iniciado sesión correctamente
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Ocurrió un error, inténtalo de nuevo.');
+        });
+    });
+</script>

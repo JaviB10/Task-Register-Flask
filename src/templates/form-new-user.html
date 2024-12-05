@@ -15,9 +15,16 @@
                     <label for="position"v>Position</label>
                     <input type="text" class="form-control custom-input" id="position" name="position" required>
                 </div>
-                <div class="mb-3">
+                <div>
                     <label for="email" class="my-1 text-light fst-normal">Email</label>
                     <input type="email" class="form-control custom-input" id="email" name="email" required>
+                </div>
+                <div class="mb-3">
+                    <label for="role_user" class="my-1 text-light fst-normal">Role</label>
+                    <select id="role_user" name="role_user" class="form-select custom-input">
+                        <option value="1">User</option>
+                        <option value="0">Admin</option>
+                    </select>
                 </div>
                 <div class="d-flex justify-content-end">
                     <button type="button" id="close-form" class="btn btn-danger me-2" onclick="closeFormNewUser()">Close</button>
