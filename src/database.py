@@ -1,10 +1,14 @@
+import os
+from dotenv import load_dotenv
 import sqlite3
 from .models.users import User
 from .models.projects import Project
 from .models.project_collaborators import ProjectCollaborator
 from .models.recycle_projects import RecycleProjects
 
-DATABASE = "database.db"
+load_dotenv()
+
+DATABASE = os.getenv("DATABASE")
 
 def get_db_connection():
     conn = sqlite3.connect(DATABASE)

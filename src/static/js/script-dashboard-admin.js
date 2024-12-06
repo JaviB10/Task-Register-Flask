@@ -27,20 +27,53 @@ const showToast = (icon, title, timer = 2000) => {
     });
 };
 
+const showToastFail = (icon, title, timer = 2000) => {
+    const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: timer,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+        }
+    });
+
+    Toast.fire({
+        icon: icon,
+        title: title
+    })
+};
+
 const toggleMenu = (event, menuID) => {
+    // Prevenir el comportamiento predeterminado
     event.preventDefault();
-    
+
+    // Cerrar todos los menús, excepto el que corresponde al menúID
     document.querySelectorAll('.menu-admin').forEach(menu => {
         if (menu.dataset.menu !== menuID.toString()) {
             menu.classList.add('hidden-menu-admin');
         }
-    })
+    });
 
+    // Seleccionar el menú correspondiente y alternar su visibilidad
     const menu = document.querySelector(`.menu-admin[data-menu="${menuID}"]`);
     if (menu) {
-        menu.classList.toggle('hidden-menu-admin')
+        menu.classList.toggle('hidden-menu-admin');
     }
-}
+};
+
+// Detectar clics fuera del menú o lápiz para cerrarlo
+document.addEventListener('click', function(event) {
+    const isMenuOrPencil = event.target.closest('.menu-admin') || event.target.closest('.text-primary');
+    if (!isMenuOrPencil) {
+        // Si el clic fue fuera de los menús o lápices, cerramos todos los menús
+        document.querySelectorAll('.menu-admin').forEach(menu => {
+            menu.classList.add('hidden-menu-admin');
+        });
+    }
+});
 
 const openFormNewProject = (user_id) => {
     formNewProject.classList.remove('hidden-form'); //Muestra el formulario
@@ -67,14 +100,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const res = await response.json(); // Procesa la respuesta 
             
-            closeFormNewProject()
-
             if (res.status == 200) {
+                closeFormNewProject()
                 showToast("success", "Project created successfully");
             } else if (res.status == 400) {
-                showToast("error", "The project must have at least one collaborator or include you as a participant");
+                showToastFail("error", "The project must have at least one collaborator or include you as a participant");
             } else {
-                showToast("error", "Internal Server Error");
+                showToastFail("error", "Internal Server Error");
             }
         } catch (error) {
             console.log(error);
@@ -158,18 +190,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const res = await response.json();
 
-            closeFormUpdateProject()
-            
             if (res.status == 200) {
+                closeFormUpdateProject()
                 showToast("success", "Project updated successfully");
             } else if (res.status == 404) {
-                showToast("error", "Project not found");
+                showToastFail("error", "Project not found");
             } else if (res.status == 400 && res.message === "The creator of the project cannot be a collaborator.") {
-                showToast("error", "The creator of the project cannot be a collaborator");
+                showToastFail("error", "The creator of the project cannot be a collaborator");
             } else if (res.status == 400 && res.message === "You are not the creator of the project, so you cannot assign yourself to it. If you wish to participate, you must do so as a collaborator.") {
-                showToast("error", "You are not the creator of the project, so you cannot assign yourself to it. If you wish to participate, you must do so as a collaborator");
+                showToastFail("error", "You are not the creator of the project, so you cannot assign yourself to it. If you wish to participate, you must do so as a collaborator");
             } else {
-                showToast("error", "Internal Server Error");
+                showToastFail("error", "Internal Server Error");
             }
         } catch (error) {
             console.log(error);
@@ -190,7 +221,6 @@ const openFormDeleteProject = (project_id, user_id) => {
     if (menu) {
         menu.classList.add('hidden-menu-admin')
     }
-    console.log(user_id);
     
     document.querySelector('#user_id_delete').value = user_id;
 }
@@ -215,16 +245,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const res = await response.json();
 
-            closeFormDeleteProject()
-
             if (res.status == 200) {
+                closeFormDeleteProject()
                 showToast("success", "Project deleted successfully");
             } else if (res.status == 400) {
+                closeFormDeleteProject()
                 showToast("error", "The project is in progress, so it cannot be deleted");
             } else if (res.status == 404) {
-                showToast("error", "Project not found");
+                showToastFail("error", "Project not found");
             } else {
-                showToast("error", "Internal Server Error");
+                showToastFail("error", "Internal Server Error");
             }
         } catch (error) {
             console.log(error);

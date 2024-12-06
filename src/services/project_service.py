@@ -50,23 +50,10 @@ class ProjectService:
             ),
             [project["id"] for project in projects]
         )
-        collaborator_rows = cursor.fetchall()
+        projects_collaborators = [dict(row) for row in cursor.fetchall()]
 
-        # Mapear los colaboradores a sus respectivos proyectos
-        project_collaborators_map = {}
-        for row in collaborator_rows:
-            project_id = row["project_id"]
-            collaborator_id = row["collaborator_id"]
-            if project_id not in project_collaborators_map:
-                project_collaborators_map[project_id] = []
-            project_collaborators_map[project_id].append(collaborator_id)
-
-        # Enriquecer los proyectos con los colaboradores
-        for project in projects:
-            project_id = project["id"]
-            project["collaborators"] = project_collaborators_map.get(project_id, [])
-
-        return projects
+        # Usar la función para mapear y enriquecer los proyectos
+        return self.map_project_collaborators(projects, projects_collaborators)
     
     def create_project(self, user_id, project_name, comments, worked_hours, worked_minutes, to_do_list, assigned_project, collaborators):
         cursor = self.db.cursor()
@@ -78,19 +65,16 @@ class ProjectService:
             if assigned_project == False and collaborators == []:
                 return {"status": 400, "message": "The project must have at least one collaborator or include you as a participant."}
 
-        creator_id = user_id
         start = datetime.now().strftime('%d-%m-%Y')
         finish = None 
         status = True
+        creator_id = user_id
 
-        if worked_hours == "":
-            worked_hours = 0
-        
-        if worked_minutes == "":
-            worked_minutes = 0
-        
-        cursor.execute('SELECT * FROM users WHERE id = ?', (user_id,))
-        user = cursor.fetchone()
+        worked_hours = int(worked_hours) if worked_hours.isdigit() else 0
+        worked_minutes = int(worked_minutes) if worked_minutes.isdigit() else 0
+
+        comments = self.clean_text(comments)
+        to_do_list = self.clean_text(to_do_list)
 
         if user['role'] != 1:
             if assigned_project is False:
@@ -104,26 +88,83 @@ class ProjectService:
             INSERT INTO projects (project_name, comments, start, finish, status, worked_hours, worked_minutes, to_do_list, creator_id, assigned_id)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', (project_name, comments, start, finish, status, worked_hours, worked_minutes, to_do_list, creator_id, assigned_project))
         
-        project_id = cursor.lastrowid  # Obtener el ID del proyecto recién creado
+        project_id = cursor.lastrowid
 
-        # Insertar colaboradores en la tabla `project_collaborators`
         if collaborators:
             for collaborator_id in collaborators:
-                cursor.execute('''
-                    INSERT INTO project_collaborators (project_id, collaborator_id)
-                    VALUES (?, ?)
-                ''', (project_id, collaborator_id))
+                cursor.execute('INSERT INTO project_collaborators (project_id, collaborator_id) VALUES (?, ?)', (project_id, collaborator_id))
 
         self.db.commit()
         
         return {"status": 200, "message": "Project created successfully."}
     
+    def update_project(self, project_id, project_name, comments, to_do_list, worked_hours, worked_minutes, status, user_id, role_user, assigned_project, collaborators):
+        cursor = self.db.cursor()
+
+        project = self.get_project_by_id(project_id)
+
+        if not project:
+            return {"status": 404, "message": "Project not found."}
+
+        finish = datetime.now().strftime('%d-%m-%Y') if status == 0 else None
+
+        worked_hours = int(worked_hours) if worked_hours.isdigit() else 0
+        worked_minutes = int(worked_minutes) if worked_minutes.isdigit() else 0
+
+        comments = self.clean_text(comments)
+        to_do_list = self.clean_text(to_do_list)
+
+        cursor.execute('SELECT * FROM users WHERE id = ?', (user_id,))
+        user = cursor.fetchone()    
+
+        if role_user != 1:  # Si el rol no es 'user'
+            if assigned_project is False:
+                if collaborators:
+                    # Si no hay asignado, se asigna al primer colaborador
+                    assigned_project = collaborators[0]
+                else:
+                    assigned_project = project['creator_id']
+            else:
+                # Si ya está asignado, verificar si el usuario es el creador
+                if user['id'] != project['creator_id']:
+                    return {"status": 400, "message": "You are not the creator of the project, so you cannot assign yourself to it. If you wish to participate, you must do so as a collaborator."}
+                else:
+                    assigned_project = user['id']
+        else:  # Si el rol es 'user'
+            if collaborators:
+                # Si hay colaboradores, asignar el proyecto al primer colaborador
+                assigned_project = collaborators[0]
+            else:
+                # Si no hay colaboradores, asignar el proyecto al creador (admin)
+                assigned_project = project['creator_id']
+
+        cursor.execute('''
+            UPDATE projects 
+            SET project_name = ?, comments = ?, to_do_list = ?, worked_hours = ?, worked_minutes = ?, status = ?, finish = ?, assigned_id = ?
+            WHERE id = ?
+        ''', (project_name, comments, to_do_list, worked_hours, worked_minutes, status, finish, assigned_project, project_id))
+
+        creator_id = project["creator_id"]
+        
+        collaborators = [int(collaborator) for collaborator in collaborators]
+
+        if creator_id in collaborators:
+            return {"status": 400, "message": "The creator of the project cannot be a collaborator."}
+
+        cursor.execute('DELETE FROM project_collaborators WHERE project_id = ?', (project_id,))
+        
+        for collaborator_id in collaborators:
+            cursor.execute('INSERT INTO project_collaborators (project_id, collaborator_id) VALUES (?, ?)', (project_id, collaborator_id))
+        
+        self.db.commit()
+
+        return {"status": 200, "message": "Project updated successfully."}
+
     def delete_project(self, project_id, user_id):
         cursor = self.db.cursor()
 
-        cursor.execute('SELECT * FROM projects WHERE id = ?', (project_id,))
-        project = cursor.fetchone()
-        print(project)
+        project = self.get_project_by_id(project_id)
+
         if not project:
             return {"status": 404, "message": "Project not found."}
         
@@ -149,97 +190,23 @@ class ProjectService:
         self.db.commit()
 
         return {"status": 200, "message": "Project deleted successfully."}
-    
-    def update_project(self, project_id, project_name, comments, to_do_list, worked_hours, worked_minutes, status, user_id, role_user, assigned_project, collaborators):
-        try:
-            cursor = self.db.cursor()
-
-            cursor.execute('SELECT * FROM projects WHERE id = ?', (project_id,))
-            project = cursor.fetchone()
-
-            if not project:
-                return {"status": 404, "message": "Project not found."}
-
-            if status == 0:  # Finished
-                finish = datetime.now().strftime('%d-%m-%Y')
-            else:  # In Progress
-                finish = None
-
-            if worked_hours == "":
-                worked_hours = 0
-            
-            if worked_minutes == "":
-                worked_minutes = 0
-
-            cursor.execute('SELECT * FROM users WHERE id = ?', (user_id,))
-            user = cursor.fetchone()    
-
-            if role_user != 1:  # Si el rol no es 'user'
-                if assigned_project is False:
-                    if collaborators:
-                        # Si no hay asignado, se asigna al primer colaborador
-                        assigned_project = collaborators[0]
-                    else:
-                        assigned_project = project['creator_id']
-                else:
-                    # Si ya está asignado, verificar si el usuario es el creador
-                    if user['id'] != project['creator_id']:
-                        return {"status": 400, "message": "You are not the creator of the project, so you cannot assign yourself to it. If you wish to participate, you must do so as a collaborator."}
-                    else:
-                        assigned_project = user['id']
-            else:  # Si el rol es 'user'
-                if collaborators:
-                    # Si hay colaboradores, asignar el proyecto al primer colaborador
-                    assigned_project = collaborators[0]
-                else:
-                    # Si no hay colaboradores, asignar el proyecto al creador (admin)
-                    assigned_project = project['creator_id']
-
-            cursor.execute('''
-                UPDATE projects 
-                SET project_name = ?, comments = ?, to_do_list = ?, worked_hours = ?, worked_minutes = ?, status = ?, finish = ?, assigned_id = ?
-                WHERE id = ?
-            ''', (project_name, comments, to_do_list, worked_hours, worked_minutes, status, finish, assigned_project, project_id))
-
-            creator_id = project["creator_id"]
-          
-            collaborators = [int(collaborator) for collaborator in collaborators]
-
-            if creator_id in collaborators:
-                return {"status": 400, "message": "The creator of the project cannot be a collaborator."}
-
-            cursor.execute('DELETE FROM project_collaborators WHERE project_id = ?', (project_id,))
-            
-            for collaborator_id in collaborators:
-                cursor.execute('''
-                    INSERT INTO project_collaborators (project_id, collaborator_id)
-                    VALUES (?, ?)
-                ''', (project_id, collaborator_id))
-            
-            self.db.commit()
-
-            return {"status": 200, "message": "Project updated successfully."}
-            
-        except Exception as e:
-            self.db.rollback()  # Revertir cambios en caso de error
-            return {"status": 500, "message": f"An error occurred: {str(e)}"}
         
     def get_user_projects(self, user_id, role):
         # Proyectos creados por el usuario
         projects_created = [dict(row) for row in self.get_projects_by_user(user_id)]
-        print('Proyecto creado',projects_created)
+
         # Proyectos donde el usuario es colaborador
         projects_collaborators_service = ProjectCollaboratorsService(self.db)
         collaborator_rows = projects_collaborators_service.get_projects_collaborators_by_user(user_id)
         projects_collaborator_ids = [row["project_id"] for row in collaborator_rows]
-        print('projects_collaborator_ids',projects_collaborator_ids)
+    
         projects_as_collaborator = []
         if projects_collaborator_ids:
             projects_as_collaborator = [dict(row) for row in self.get_projects_by_id(projects_collaborator_ids)]
-        print('projects_as_collaborator',projects_as_collaborator)
+
         # Proyectos asignados al usuario
         projects_assigned = [dict(row) for row in self.get_projects_assigned_to_user(user_id)]
-        print('projects_assigned',projects_assigned)
+
         # Filtrar y combinar según el rol del usuario
         if role == 1:
             # Usuario regular: incluir creados, colaboraciones y asignados
@@ -248,20 +215,18 @@ class ProjectService:
                 for project in (projects_created + projects_as_collaborator + projects_assigned)
             }.values())
         elif role == 0:
-            print('Entrar como admin')
             # Administrador: incluir creados y colaboraciones, excluir asignados
             filtered_projects_created = [
                 project for project in projects_created
                 if project["assigned_id"] == user_id
             ]
-            print('filtered_projects_created', filtered_projects_created)
 
             # Combinar proyectos creados filtrados y colaboraciones
             all_projects = list({
                 project["id"]: project
                 for project in (filtered_projects_created + projects_as_collaborator)
             }.values())
-            print('all_projects', all_projects)
+        
         # Mapear colaboradores a proyectos
         projects_collaborators = projects_collaborators_service.get_all_projects_collaborators()
         all_projects = self.map_project_collaborators(all_projects, projects_collaborators)
@@ -270,14 +235,23 @@ class ProjectService:
 
     def map_project_collaborators(self, projects, projects_collaborators):
         project_collaborators_map = {}
-        for pc in projects_collaborators:
-            project_id = pc['project_id']
-            collaborator_id = pc['collaborator_id']
+
+        for project_collaborator in projects_collaborators:
+
+            project_id = project_collaborator['project_id']
+            collaborator_id = project_collaborator['collaborator_id']
+
             if project_id not in project_collaborators_map:
+
                 project_collaborators_map[project_id] = []
+
             project_collaborators_map[project_id].append(collaborator_id)
 
         for project in projects:
+
             project['collaborators'] = project_collaborators_map.get(project['id'], [])
 
         return projects
+    
+    def clean_text(self, value):
+        return value.replace('\n', ' ').replace('\r', '').strip() if value else ''

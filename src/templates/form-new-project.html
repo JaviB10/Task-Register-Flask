@@ -37,12 +37,12 @@
                     </select>
                 </div>
                 {% if user.role == 0 %}
-                    <div class="form-check my-3">
+                    <div class="form-check mt-3">
                         <input class="form-check-input" type="checkbox" value="on" id="defaultCheck1" name="is_part_of_project" checked>
                         <label class="form-check-label" for="defaultCheck1">Mark if you are part of the project</label>
                     </div>
                 {% endif %}
-                <div class="d-flex justify-content-end flex-wrap gap-2">
+                <div class="d-flex justify-content-end flex-wrap gap-2 mt-3">
                     <button type="button" id="close-form" class="btn btn-danger me-2" onclick="closeFormNewProject()">Close</button>
                     <button type="submit" id="create-project" class="btn btn-success">Create</button>
                 </div>

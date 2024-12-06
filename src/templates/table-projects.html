@@ -18,45 +18,42 @@
                     </thead>
                     <tbody>
                         {% for project in all_projects %}
-                            
-                                <tr>
-                                    <td>
-                                        <a href="#" class="text-primary fw-bold text-decoration-none" data-menu="{{ project.id }}" onclick="toggleMenu(event, '{{ project.id }}')">
-                                            <div class="d-flex justify-content-center align-items-center align-middle" style="height: 2.5rem;">
-                                                <img src="{{ url_for('static', filename='img/menu-icon.svg') }}" alt="">
-                                            </div>
-                                        </a>
-                                        
-                                        <div class="menu-admin position-absolute mt-2 py-2 border border-light bg-black text-light hidden-menu-admin d-flex" style="width: auto;" data-menu="{{ project.id }}">
-                                            <img src="{{ url_for('static', filename='img/update-icon.svg') }}" alt="update" title="Update project" class="cursor-pointer ms-2" onclick="openFormUpdateProject('{{ project.id }}', '{{ project.project_name}}', '{{ project.comments}}', '{{ project.worked_hours}}', '{{ project.worked_minutes}}', '{{ project.to_do_list}}', '{{ project.status}}', '{{ project.assigned_id}}', '{{ project.collaborators | join(',') }}', '{{ user.id }}', '{{ user.role }}')">
-                                            <img src="{{ url_for('static', filename='img/delete-icon.svg') }}" alt="delete" title="Delete project" class="cursor-pointer mx-2" onclick="openFormDeleteProject('{{ project.id }}')">
+                            <tr>
+                                <td>
+                                    <a href="#" class="text-primary fw-bold text-decoration-none" data-menu="{{ project.id }}" onclick="toggleMenu(event, '{{ project.id }}')">
+                                        <div class="d-flex justify-content-center align-items-center align-middle" style="height: 2.5rem;">
+                                            <img src="{{ url_for('static', filename='img/menu-icon.svg') }}" alt="">
                                         </div>
-                                    </td>
-                                    <td class="align-middle">{{ project.project_name }}</td>
-                                    <td class="align-middle">{{ project.comments }}</td>
-                                    <td class="text-center align-middle">{{ project.start }}</td>
-                                    <td class="text-center align-middle">
-                                        {% if project.finish != None %}
-                                            {{ project.finish }}
-                                        {% endif %}
-                                    </td>
-                                    <td class="text-center align-middle">
-                                        {% if project.status == 1 %}
-                                            In progress
-                                        {% elif project.status == 0 %}
-                                            Finished
-                                        {% else %}
-                                            Unknown
-                                        {% endif %}
-                                    </td>
-                                    <td class="text-center align-middle">{{ project.collaborators | length }}</td>
-                                    <td class="text-center align-middle">
-                                        {{ '%d:%02dhs' | format(project.worked_hours, project.worked_minutes) }}
-                                    </td>
-                                    <td class="align-middle">{{ project.to_do_list }}</td>
-                                </tr>
-                            
-                            
+                                    </a>
+                                    
+                                    <div class="menu-admin position-absolute mt-2 py-2 border border-light bg-black text-light hidden-menu-admin d-flex" style="width: auto;" data-menu="{{ project.id }}">
+                                        <img src="{{ url_for('static', filename='img/update-icon.svg') }}" alt="update" title="Update project" class="cursor-pointer ms-2" onclick="openFormUpdateProject('{{ project.id }}', '{{ project.project_name}}', '{{ project.comments }}', '{{ project.worked_hours}}', '{{ project.worked_minutes}}', '{{ project.to_do_list}}', '{{ project.status}}', '{{ project.assigned_id}}', '{{ project.collaborators | join(',') }}', '{{ user.id }}', '{{ user.role }}')">
+                                        <img src="{{ url_for('static', filename='img/delete-icon.svg') }}" alt="delete" title="Delete project" class="cursor-pointer mx-2" onclick="openFormDeleteProject('{{ project.id }}', '{{ user.id }}')">
+                                    </div>
+                                </td>
+                                <td class="align-middle" style="width: 100px; white-space: nowrap;">{{ project.project_name }}</td>
+                                <td class="align-middle">{{ project.comments }}</td>
+                                <td class="text-center align-middle" style="width: 100px; white-space: nowrap;">{{ project.start }}</td>
+                                <td class="text-center align-middle" style="width: 100px; white-space: nowrap;">
+                                    {% if project.finish != None %}
+                                        {{ project.finish }}
+                                    {% endif %}
+                                </td>
+                                <td class="text-center align-middle" style="width: 100px; white-space: nowrap;">
+                                    {% if project.status == 1 %}
+                                        In progress
+                                    {% elif project.status == 0 %}
+                                        Finished
+                                    {% else %}
+                                        Unknown
+                                    {% endif %}
+                                </td>
+                                <td class="text-center align-middle">{{ project.collaborators | length }}</td>
+                                <td class="text-center align-middle" style="width: 100px; white-space: nowrap;">
+                                    {{ '%d:%02dhs' | format(project.worked_hours, project.worked_minutes) }}
+                                </td>
+                                <td class="align-middle">{{ project.to_do_list }}</td>
+                            </tr>
                         {% endfor %}
                     </tbody>
                 </table>

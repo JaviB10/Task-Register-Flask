@@ -22,9 +22,8 @@ class UserService:
     def create_user(self, name, last_name, position, email, role):
         cursor = self.db.cursor()
 
-        cursor.execute('SELECT * FROM users WHERE email = ?', (email,))
-        user = cursor.fetchone()
-        
+        user = self.get_user_by_email(email)
+
         if user:
             return {"status": 400, "message": "The email has already been taken."}
 
@@ -40,15 +39,13 @@ class UserService:
     def update_user(self, user_id, name, last_name, position, email, role):
         cursor = self.db.cursor()
 
-        cursor.execute('SELECT * FROM users WHERE id = ?', (user_id,))
-        user = cursor.fetchone()
+        user = self.get_user_by_id(user_id)
 
         if not user:
             return {"status": 404, "message": "User not found."}
         
         if email != user['email']:
-            cursor.execute('SELECT * FROM users WHERE email = ?', (email,))
-            user = cursor.fetchone()
+            user = self.get_user_by_email(email)
             
             if user:
                 return {"status": 400, "message": "The email has already been taken."}
@@ -58,13 +55,11 @@ class UserService:
         self.db.commit()
 
         return {"status": 200, "message": "User updated successfully."}
-        
-    
+          
     def delete_user(self, user_id):
         cursor = self.db.cursor()
 
-        cursor.execute('SELECT * FROM users WHERE id = ?', (user_id,))
-        user = cursor.fetchone()
+        user = self.get_user_by_id(user_id)
 
         if not user:
             return {"status": 404, "message": "User not found."}
@@ -77,7 +72,6 @@ class UserService:
                 if project['status'] == 1:
                     return {"status": 400, "message": "The user cannot be deleted because they have unfinished projects."}
         
-        # Intentar eliminar el usuario
         cursor.execute('DELETE FROM users WHERE id = ?', (user_id,))
 
         self.db.commit()

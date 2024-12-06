@@ -84,10 +84,10 @@ def login():
 def login_page():
     return render_template('login.html')
 
-@auth_bp.route('/logout')
+@auth_bp.route('/logout', methods=['GET'])
 def logout():
     # Eliminar el token de las cookies
-    response = redirect(url_for('auth.login_page'))  # Redirige a la página de login
+    response = redirect(url_for('auth.login_page'))
 
     # Eliminar el token de las cookies (seteamos el valor a None y max_age a 0 para eliminarlo)
     response.set_cookie('jwt', '', expires=0)

@@ -24,7 +24,7 @@
                                                 </div>
                                             </a>
                                             <div class="menu-admin position-absolute mt-2 py-2 border border-light bg-black text-light hidden-menu-admin d-flex" style="width: auto;" data-menu="{{ user.id }}">
-                                                <a href="/projects_user/{{ user.id }}"><img src="{{ url_for('static', filename='img/search-icon.svg') }}" alt="" title="User projects" class="mx-2"></a>
+                                                <a href="/projects-user/{{ user.id }}"><img src="{{ url_for('static', filename='img/search-icon.svg') }}" alt="" title="User projects" class="mx-2"></a>
                                                 <img src="{{ url_for('static', filename='img/update-icon.svg') }}" alt="" title="Update user" class="cursor-pointer" onclick="openFormUpdateUser('{{ user.id }}', '{{ user.name }}', '{{ user.last_name }}', '{{ user.position }}', '{{ user.email }}', '{{ user.role }}')">
                                                 <img src="{{ url_for('static', filename='img/delete-icon.svg') }}" alt="" title="Delete user" class="cursor-pointer mx-2" onclick="openFormDeleteUser('{{ user.id }}')">
                                             </div>

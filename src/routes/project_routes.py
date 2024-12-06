@@ -1,6 +1,5 @@
 from flask import Blueprint, request, jsonify
 from ..database import get_db_connection
-from .auth_routes import token_required
 from ..services.project_service import ProjectService
 
 project_bp = Blueprint('projects', __name__)

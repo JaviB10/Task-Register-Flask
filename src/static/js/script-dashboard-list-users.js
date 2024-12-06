@@ -26,20 +26,53 @@ const showToast = (icon, title, timer = 1500) => {
     });
 };
 
+const showToastFail = (icon, title, timer = 2000) => {
+    const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: timer,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+        }
+    });
+
+    Toast.fire({
+        icon: icon,
+        title: title
+    })
+};
+
 const toggleMenu = (event, menuID) => {
+    // Prevenir el comportamiento predeterminado
     event.preventDefault();
-    
+
+    // Cerrar todos los menús, excepto el que corresponde al menúID
     document.querySelectorAll('.menu-admin').forEach(menu => {
         if (menu.dataset.menu !== menuID.toString()) {
             menu.classList.add('hidden-menu-admin');
         }
-    })
+    });
 
+    // Seleccionar el menú correspondiente y alternar su visibilidad
     const menu = document.querySelector(`.menu-admin[data-menu="${menuID}"]`);
     if (menu) {
-        menu.classList.toggle('hidden-menu-admin')
+        menu.classList.toggle('hidden-menu-admin');
     }
-}
+};
+
+// Detectar clics fuera del menú o lápiz para cerrarlo
+document.addEventListener('click', function(event) {
+    const isMenuOrPencil = event.target.closest('.menu-admin') || event.target.closest('.text-primary');
+    if (!isMenuOrPencil) {
+        // Si el clic fue fuera de los menús o lápices, cerramos todos los menús
+        document.querySelectorAll('.menu-admin').forEach(menu => {
+            menu.classList.add('hidden-menu-admin');
+        });
+    }
+});
 
 const openFormNewUser = () => {
     formNewUser.classList.remove('hidden-new-user');
@@ -64,15 +97,14 @@ document.addEventListener("DOMContentLoaded", function () {
             });
 
             const res = await response.json();
-            
-            closeFormNewUser()
 
             if (res.status == 200) {
+                closeFormNewUser()
                 showToast("success", "User created successfully");
             } else if (res.status == 400) {
-                showToast("error", "The email has already been taken");
+                showToastFail("error", "The email has already been taken");
             }else {
-                showToast("error", "Internal Server Error");
+                showToastFail("error", "Internal Server Error");
             }
         } catch (error) {
             console.log(error);
@@ -129,16 +161,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const res = await response.json();
             
-            closeFormUpdateUser()
-
             if (res.status == 200) {
+                closeFormUpdateUser()
                 showToast("success", "User updated successfully");
             } else if (res.status == 400) {
-                showToast("error", "The email has already been taken");
+                showToastFail("error", "The email has already been taken");
             } else if (res.status == 404) {
+                closeFormUpdateUser()
                 showToast("error", "User not found");
             } else {
-                showToast("error", "Internal Server Error");
+                showToastFail("error", "Internal Server Error");
             }
         } catch (error) {
             console.log(error);
@@ -178,16 +210,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const res = await response.json();
 
-            closeFormDeleteUser()
-
             if (res.status == 200) {
+                closeFormDeleteUser()
                 showToast("success", "User deleted successfully");
             } else if (res.status == 400) {
-                showToast("error", "The user cannot be deleted because they have unfinished projects");
+                showToastFail("error", "The user cannot be deleted because they have unfinished projects");
             } else if (res.status == 404) {
+                closeFormDeleteUser()
                 showToast("error", "User not found");
             } else {
-                showToast("error", "Internal Server Error");
+                showToastFail("error", "Internal Server Error");
             }
         } catch (error) {
             console.log(error);
