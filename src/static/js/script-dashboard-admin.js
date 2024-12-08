@@ -199,6 +199,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 showToastFail("error", "The creator of the project cannot be a collaborator");
             } else if (res.status == 400 && res.message === "You are not the creator of the project, so you cannot assign yourself to it. If you wish to participate, you must do so as a collaborator.") {
                 showToastFail("error", "You are not the creator of the project, so you cannot assign yourself to it. If you wish to participate, you must do so as a collaborator");
+            } else if (res.status == 400 && res.message === "To finalize the project, you must log the hours worked.") {
+                showToastFail("error", "To finalize the project, you must log the hours worked");
             } else {
                 showToastFail("error", "Internal Server Error");
             }

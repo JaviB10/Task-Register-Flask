@@ -105,6 +105,10 @@ class ProjectService:
 
         if not project:
             return {"status": 404, "message": "Project not found."}
+        
+        if status == 0:
+            if (not worked_hours or int(worked_hours) == 0) and (not worked_minutes or int(worked_minutes) == 0):
+                return {"status": 400, "message": "To finalize the project, you must log the hours worked."}
 
         finish = datetime.now().strftime('%d-%m-%Y') if status == 0 else None
 
@@ -115,7 +119,7 @@ class ProjectService:
         to_do_list = self.clean_text(to_do_list)
 
         cursor.execute('SELECT * FROM users WHERE id = ?', (user_id,))
-        user = cursor.fetchone()    
+        user = cursor.fetchone()
 
         if role_user != 1:  # Si el rol no es 'user'
             if assigned_project is False:

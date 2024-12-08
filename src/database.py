@@ -11,13 +11,15 @@ load_dotenv()
 DATABASE = os.getenv("DATABASE")
 
 def get_db_connection():
-    conn = sqlite3.connect(DATABASE)
+    conn = sqlite3.connect(DATABASE, check_same_thread=False)
     conn.row_factory = sqlite3.Row
     return conn
 
 def initialize_database():
     conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
+
+    conn.execute('PRAGMA journal_mode=WAL;')
 
     # Crear tablas
     User.create_table(cursor)

@@ -19,7 +19,7 @@
                     <tbody>
                         {% for project in all_projects %}
                             <tr>
-                                <td>
+                                <td class="align-middle" style="width: 50px; white-space: nowrap;">
                                     <a href="#" class="text-primary fw-bold text-decoration-none" data-menu="{{ project.id }}" onclick="toggleMenu(event, '{{ project.id }}')">
                                         <div class="d-flex justify-content-center align-items-center align-middle" style="height: 2.5rem;">
                                             <img src="{{ url_for('static', filename='img/menu-icon.svg') }}" alt="">
@@ -31,7 +31,7 @@
                                         <img src="{{ url_for('static', filename='img/delete-icon.svg') }}" alt="delete" title="Delete project" class="cursor-pointer mx-2" onclick="openFormDeleteProject('{{ project.id }}', '{{ user.id }}')">
                                     </div>
                                 </td>
-                                <td class="align-middle" style="width: 100px; white-space: nowrap;">{{ project.project_name }}</td>
+                                <td class="align-middle" style="width: 150px; white-space: nowrap;">{{ project.project_name }}</td>
                                 <td class="align-middle">{{ project.comments }}</td>
                                 <td class="text-center align-middle" style="width: 100px; white-space: nowrap;">{{ project.start }}</td>
                                 <td class="text-center align-middle" style="width: 100px; white-space: nowrap;">
@@ -48,7 +48,7 @@
                                         Unknown
                                     {% endif %}
                                 </td>
-                                <td class="text-center align-middle">{{ project.collaborators | length }}</td>
+                                <td class="text-center align-middle" style="width: 100px; white-space: nowrap;">{{ project.collaborators | length }}</td>
                                 <td class="text-center align-middle" style="width: 100px; white-space: nowrap;">
                                     {{ '%d:%02dhs' | format(project.worked_hours, project.worked_minutes) }}
                                 </td>
